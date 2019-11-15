@@ -1,0 +1,7 @@
+/current_build
+/build.*
+/sources
+/*.log
+/*.txt
+/are_you_sure
+/tools/

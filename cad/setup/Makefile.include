@@ -1,0 +1,63 @@
+export BSG_DESIGNS_TARGET_DIR  :=$(realpath $(TOP_DIR)/../)
+
+include $(BSG_DESIGNS_TARGET_DIR)/mk/uwrf.config.mk
+#include $(BSG_DESIGNS_TARGET_DIR)/mk/hier.mk
+
+#===============================================================================
+# CAD Tool Environment Setup
+#===============================================================================
+
+-include $(BSG_CADENV_DIR)/cadenv.mk
+
+#TODO Add env for cad tools
+export GDS_FILE     :=$(PREP_DIR)/gds/nangate45.gds
+
+#===============================================================================
+# TOOL Pointers
+#===============================================================================
+
+export TOOLS_DIR       :=$(TOP_DIR)/tools
+export OPENROAD        :=$(TOOLS_DIR)/openroad/OpenROAD-2019-09-05_20-10
+export OPENROAD_FLOW   :=$(TOOLS_DIR)/alpha-release/flow
+export PATH            :=$(OPENROAD)/bin:$(OPENROAD)/bin/Linux-x86-64:$(OPENROAD)/pdn/scripts:$(PATH)
+export TCLLIBPATH      :=$(OPENROAD)/pdn/scripts
+export LD_LIBRARY_PATH :=$(TOOLS_DIR)/lib:$(LD_LIBRARY_PATH)
+
+#===============================================================================
+# PDK Pointers
+#===============================================================================
+
+# Unpacked pdk root dir
+export PDK_ROOT_DIR :=$(TOP_DIR)/pdk/unpacked
+
+# Directory pointers
+export NANGATE_PDK_TAR  :=$(TOP_DIR)/pdk/NangateOpenCellLibrary_PDKv1_3_v2010_12.tgz
+export FREE45_PDK_TAR   :=$(TOP_DIR)/pdk/ncsu-FreePDK45-1.4.tar.gz
+export NANGATE_FE_DIR   :=$(PDK_ROOT_DIR)/NangateOpenCellLibrary_PDKv1_3_v2010_12/Front_End
+export NANGATE_BE_DIR   :=$(PDK_ROOT_DIR)/NangateOpenCellLibrary_PDKv1_3_v2010_12/Back_End
+export NCSU_BASEKIT_DIR :=$(PDK_ROOT_DIR)/FreePDK45/ncsu_basekit
+
+# Lib Files
+export PDK_LIB_FILE :=$(NANGATE_FE_DIR)/Liberty/NLDM/NangateOpenCellLibrary_typical.lib
+export LIB_FILE     :=$(PREP_DIR)/lib/nangate45.lib
+
+# Lef Files
+#export PDK_LEF_FILE :=$(NANGATE_BE_DIR)/lef/NangateOpenCellLibrary.lef
+export PDK_LEF_FILE :=$(OPENROAD_FLOW)/platforms/nangate45/NangateOpenCellLibrary.mod.lef
+export LEF_FILE     :=$(PREP_DIR)/lef/nangate45.lef
+
+# Gds Files
+export PDK_GDS_FILE :=$(NANGATE_BE_DIR)/gds/NangateOpenCellLibrary.gds
+
+#===============================================================================
+# PLATFORM Pointers
+#===============================================================================
+
+export PLACE_SITE       := FreePDK45_38x28_10R_NP_162NW_34O
+export TRACKS_INFO_FILE := $(OPENROAD_FLOW)/platforms/nangate45/tracks.info
+export CTS_TECH_DIR     := $(OPENROAD_FLOW)/platforms/nangate45/tritonCTS
+
+export CAP_PER_MICRON := 0.235146e-12
+export RES_PER_MICRON := 1.59
+export CAP_UNIT_PER_MICRON := 0.00020
+export RES_UNIT_PER_MICRON := 0.0020

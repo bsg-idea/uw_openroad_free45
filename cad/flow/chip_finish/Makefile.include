@@ -1,0 +1,129 @@
+export CHIP_FINISH_FLOW_DIR :=$(realpath $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST)))))
+
+##==============================================================================
+##   ___ _    _        ___ _      _    _      _____                  _      
+##  / __| |_ (_)_ __  | __(_)_ _ (_)__| |_   |_   _|_ _ _ _ __ _ ___| |_ ___
+## | (__| ' \| | '_ \ | _|| | ' \| (_-< ' \    | |/ _` | '_/ _` / -_)  _(_-<
+##  \___|_||_|_| .__/ |_| |_|_||_|_/__/_||_|   |_|\__,_|_| \__, \___|\__/__/
+##             |_|                                         |___/            
+##==============================================================================
+
+export CHIP_FINISH_RUN_DIR ?=$(BUILD_DIR)/chip_finish
+
+#=======================================
+# CHIP FINISH
+#=======================================
+
+chip_finish: chip_finish.final
+	@## Alias to run all chip_finish steps.
+	@##     1. chip_finish.setup
+	@##     2. chip_finish.report
+	@##     3. chip_finish.merge
+	@##     4. chip_finish.final
+
+#=======================================
+# SETUP
+#=======================================
+
+chip_finish.setup: route.final
+	@## Prepare for chip finishing.
+	mkdir -p $(CHIP_FINISH_RUN_DIR)/{logs,results,reports,etc,temp}
+	ln -nsf $(OPENROAD)/share/replace/PORT9.dat $(CHIP_FINISH_RUN_DIR)/PORT9.dat
+	ln -nsf $(OPENROAD)/share/replace/POST9.dat $(CHIP_FINISH_RUN_DIR)/POST9.dat
+	ln -nsf $(OPENROAD)/share/replace/POWV9.dat $(CHIP_FINISH_RUN_DIR)/POWV9.dat
+	ln -nsf $(OPENROAD)/share/replace/PORT9.dat $(CHIP_FINISH_RUN_DIR)/etc/PORT9.dat
+	ln -nsf $(OPENROAD)/share/replace/POST9.dat $(CHIP_FINISH_RUN_DIR)/etc/POST9.dat
+	ln -nsf $(OPENROAD)/share/replace/POWV9.dat $(CHIP_FINISH_RUN_DIR)/etc/POWV9.dat
+	touch $(BUILD_VPATH)/$@
+
+#=======================================
+# REPORT
+#=======================================
+
+export CHIP_FINISH_REPORT_IN_V   := $(ROUTE_FINAL_OUT_V)
+export CHIP_FINISH_REPORT_IN_SDC := $(ROUTE_FINAL_OUT_SDC)
+export CHIP_FINISH_REPORT_IN_DEF := $(ROUTE_FINAL_OUT_DEF)
+
+# No output files (non-transformative step)
+
+chip_finish.report: chip_finish.setup
+	@## Generate final reports.
+	cd $(CHIP_FINISH_RUN_DIR)/temp && \
+		(time resizer \
+			$(CHIP_FINISH_FLOW_DIR)/scripts/final_report.tcl \
+		) 2>&1 | tee -i ../logs/$@.log
+	! grep --color -i "^error" $(CHIP_FINISH_RUN_DIR)/logs/$@.log
+	touch $(BUILD_VPATH)/$@
+
+#=======================================
+# MERGE
+#=======================================
+
+export CHIP_FINISH_MERGE_OUT_GDS := $(CHIP_FINISH_RUN_DIR)/results/chip_finish.merge.gds
+
+chip_finish.merge: chip_finish.report
+	@## Generate a finalized gds file.
+	cd $(CHIP_FINISH_RUN_DIR) && \
+		klayout \
+			-zz \
+			-rd design_name=$(DESIGN_NAME) \
+			-rd in_def=$(ROUTE_FINAL_OUT_DEF) \
+			-rd in_lef=$(shell realpath --relative-to=$(ROUTE_RUN_DIR)/results $(PDK_LEF_FILE)) \
+			-rd in_gds=$(GDS_FILE) \
+			-rd out_gds=$(CHIP_FINISH_MERGE_OUT_GDS) \
+			-rm $(CHIP_FINISH_FLOW_DIR)/scripts/def_to_gds.rb
+	touch $(BUILD_VPATH)/$@
+
+#=======================================
+# FINAL
+#=======================================
+
+CHIP_FINISH_FINAL_OP :=cp
+#CHIP_FINISH_FINAL_OP :=ln -nsf
+
+export CHIP_FINISH_FINAL_IN_V    := $(ROUTE_FINAL_OUT_V)
+export CHIP_FINISH_FINAL_IN_SDC  := $(ROUTE_FINAL_OUT_SDC)
+export CHIP_FINISH_FINAL_IN_DEF  := $(ROUTE_FINAL_OUT_DEF)
+export CHIP_FINISH_FINAL_IN_GDS  := $(CHIP_FINISH_RUN_DIR)/results/chip_finish.merge.gds
+
+export CHIP_FINISH_FINAL_OUT_V   := $(CHIP_FINISH_RUN_DIR)/results/chip_finish.final.v
+export CHIP_FINISH_FINAL_OUT_SDC := $(CHIP_FINISH_RUN_DIR)/results/chip_finish.final.sdc
+export CHIP_FINISH_FINAL_OUT_DEF := $(CHIP_FINISH_RUN_DIR)/results/chip_finish.final.def
+export CHIP_FINISH_FINAL_OUT_GDS := $(CHIP_FINISH_RUN_DIR)/results/chip_finish.final.gds
+
+chip_finish.final: chip_finish.merge
+	@## Finalize chip_finish.
+	$(CHIP_FINISH_FINAL_OP) $(CHIP_FINISH_FINAL_IN_V)   $(CHIP_FINISH_FINAL_OUT_V)
+	$(CHIP_FINISH_FINAL_OP) $(CHIP_FINISH_FINAL_IN_SDC) $(CHIP_FINISH_FINAL_OUT_SDC)
+	$(CHIP_FINISH_FINAL_OP) $(CHIP_FINISH_FINAL_IN_DEF) $(CHIP_FINISH_FINAL_OUT_DEF)
+	$(CHIP_FINISH_FINAL_OP) $(CHIP_FINISH_FINAL_IN_GDS) $(CHIP_FINISH_FINAL_OUT_GDS)
+	touch $(BUILD_VPATH)/$@
+
+#=======================================
+# CLEAN
+#=======================================
+
+clean.chip_finish: clean.chip_finish.setup
+	@## Alias to cleanup all chip_finish steps.
+
+clean.chip_finish.setup: are_you_sure clean.chip_finish.report
+	@## Cleanup the chip_finish.setup target.
+	rm -rf $(CHIP_FINISH_RUN_DIR)
+	rm -f $(BUILD_VPATH)/$(subst clean.,,$@)
+
+clean.chip_finish.report: are_you_sure clean.chip_finish.merge
+	@## Cleanup the chip_finish.report target.
+	rm -f $(CHIP_FINISH_RUN_DIR)/logs/$(subst clean.,,$@).log
+	rm -f $(BUILD_VPATH)/$(subst clean.,,$@)
+
+clean.chip_finish.merge: are_you_sure clean.chip_finish.final
+	@## Cleanup the chip_finish.merge target.
+	rm -f $(CHIP_FINISH_MERGE_OUT_GDS)
+	rm -f $(CHIP_FINISH_RUN_DIR)/logs/$(subst clean.,,$@).log
+	rm -f $(BUILD_VPATH)/$(subst clean.,,$@)
+
+clean.chip_finish.final: are_you_sure
+	@## Cleanup the chip_finish.final target.
+	rm -f $(CHIP_FINISH_RUN_DIR)/logs/$(subst clean.,,$@).log
+	rm -f $(BUILD_VPATH)/$(subst clean.,,$@)
+

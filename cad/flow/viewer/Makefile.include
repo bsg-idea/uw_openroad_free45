@@ -1,0 +1,153 @@
+export VIEWER_FLOW_DIR :=$(realpath $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST)))))
+
+##==============================================================================
+## __   ___                      _____                  _      
+## \ \ / (_)_____ __ _____ _ _  |_   _|_ _ _ _ __ _ ___| |_ ___
+##  \ V /| / -_) V  V / -_) '_|   | |/ _` | '_/ _` / -_)  _(_-<
+##   \_/ |_\___|\_/\_/\___|_|     |_|\__,_|_| \__, \___|\__/__/
+##                                            |___/            
+##==============================================================================
+
+#=======================================
+# VIEW FP
+#=======================================
+
+view.fp:
+	@## View the def from the lastest fp step.
+	make view.$(shell ls $(BUILD_VPATH) -t1 | grep ^fp | head -1)
+
+view.fp.v2def:
+	@## View the def resulting from the fp.v2def setp.
+	$(eval export REL_LEF_FILE=$(shell realpath --relative-to=$(FP_RUN_DIR)/results $(LEF_FILE)))
+	$(eval export DEF_FILE=$(shell realpath $(FP_V2DEF_OUT_DEF)))
+	klayout -rm $(VIEWER_FLOW_DIR)/scripts/open_lef_def.rb
+
+view.fp.io:
+	@## View the def resulting from the fp.io setp.
+	$(eval export REL_LEF_FILE=$(shell realpath --relative-to=$(FP_RUN_DIR)/results $(LEF_FILE)))
+	$(eval export DEF_FILE=$(shell realpath $(FP_IO_OUT_DEF)))
+	klayout -rm $(VIEWER_FLOW_DIR)/scripts/open_lef_def.rb
+
+view.fp.global:
+	@## View the def resulting from the fp.global setp.
+	$(eval export REL_LEF_FILE=$(shell realpath --relative-to=$(FP_RUN_DIR)/results $(LEF_FILE)))
+	$(eval export DEF_FILE=$(shell realpath $(FP_GLOBAL_OUT_DEF)))
+	klayout -rm $(VIEWER_FLOW_DIR)/scripts/open_lef_def.rb
+
+view.fp.macro:
+	@## View the def resulting from the fp.macro setp.
+	$(eval export REL_LEF_FILE=$(shell realpath --relative-to=$(FP_RUN_DIR)/results $(LEF_FILE)))
+	$(eval export DEF_FILE=$(shell realpath $(FP_MACRO_OUT_DEF)))
+	klayout -rm $(VIEWER_FLOW_DIR)/scripts/open_lef_def.rb
+
+view.fp.pdn:
+	@## View the def resulting from the fp.pdn setp.
+	$(eval export REL_LEF_FILE=$(shell realpath --relative-to=$(FP_RUN_DIR)/results $(LEF_FILE)))
+	$(eval export DEF_FILE=$(shell realpath $(FP_PDN_OUT_DEF)))
+	klayout -rm $(VIEWER_FLOW_DIR)/scripts/open_lef_def.rb
+
+view.fp.final:
+	@## View the def resulting from the fp.final setp.
+	$(eval export REL_LEF_FILE=$(shell realpath --relative-to=$(FP_RUN_DIR)/results $(LEF_FILE)))
+	$(eval export DEF_FILE=$(shell realpath $(FP_FINAL_OUT_DEF)))
+	klayout -rm $(VIEWER_FLOW_DIR)/scripts/open_lef_def.rb
+
+#=======================================
+# VIEW PLACE
+#=======================================
+
+view.place:
+	@## View the def from the lastest place step.
+	make view.$(shell ls $(BUILD_VPATH) -t1 | grep ^place | head -1)
+
+view.place.global:
+	@## View the def resulting from the place.global setp.
+	$(eval export REL_LEF_FILE=$(shell realpath --relative-to=$(FP_RUN_DIR)/results $(LEF_FILE)))
+	$(eval export DEF_FILE=$(shell realpath $(PLACE_GLOBAL_OUT_DEF)))
+	klayout -rm $(VIEWER_FLOW_DIR)/scripts/open_lef_def.rb
+
+view.place.resize:
+	@## View the def resulting from the place.resize setp.
+	$(eval export REL_LEF_FILE=$(shell realpath --relative-to=$(FP_RUN_DIR)/results $(LEF_FILE)))
+	$(eval export DEF_FILE=$(shell realpath $(PLACE_RESIZE_OUT_DEF)))
+	klayout -rm $(VIEWER_FLOW_DIR)/scripts/open_lef_def.rb
+
+view.place.detail:
+	@## View the def resulting from the place.detail setp.
+	$(eval export REL_LEF_FILE=$(shell realpath --relative-to=$(FP_RUN_DIR)/results $(LEF_FILE)))
+	$(eval export DEF_FILE=$(shell realpath $(PLACE_DETAIL_OUT_DEF)))
+	klayout -rm $(VIEWER_FLOW_DIR)/scripts/open_lef_def.rb
+
+view.place.final:
+	@## View the def resulting from the place.final setp.
+	$(eval export REL_LEF_FILE=$(shell realpath --relative-to=$(FP_RUN_DIR)/results $(LEF_FILE)))
+	$(eval export DEF_FILE=$(shell realpath $(PLACE_FINAL_OUT_DEF)))
+	klayout -rm $(VIEWER_FLOW_DIR)/scripts/open_lef_def.rb
+
+#=======================================
+# VIEW CTS
+#=======================================
+
+view.cts:
+	@## View the def from the lastest cts step.
+	make view.$(shell ls $(BUILD_VPATH) -t1 | grep ^cts | head -1)
+
+view.cts.detail:
+	@## View the def resulting from the cts.detail setp.
+	$(eval export REL_LEF_FILE=$(shell realpath --relative-to=$(FP_RUN_DIR)/results $(LEF_FILE)))
+	$(eval export DEF_FILE=$(shell realpath $(CTS_DETAIL_OUT_DEF)))
+	klayout -rm $(VIEWER_FLOW_DIR)/scripts/open_lef_def.rb
+
+view.cts.final:
+	@## View the def resulting from the cts.final setp.
+	$(eval export REL_LEF_FILE=$(shell realpath --relative-to=$(FP_RUN_DIR)/results $(LEF_FILE)))
+	$(eval export DEF_FILE=$(shell realpath $(CTS_FINAL_OUT_DEF)))
+	klayout -rm $(VIEWER_FLOW_DIR)/scripts/open_lef_def.rb
+
+#=======================================
+# VIEW ROUTE
+#=======================================
+
+view.route:
+	@## View the def from the lastest route step.
+	make view.$(shell ls $(BUILD_VPATH) -t1 | grep ^route | head -1)
+
+view.route.detail:
+	@## View the def resulting from the route.detail setp.
+	$(eval export REL_LEF_FILE=$(shell realpath --relative-to=$(FP_RUN_DIR)/results $(LEF_FILE)))
+	$(eval export DEF_FILE=$(shell realpath $(ROUTE_DETAIL_OUT_DEF)))
+	klayout -rm $(VIEWER_FLOW_DIR)/scripts/open_lef_def.rb
+
+view.route.final:
+	@## View the def resulting from the route.final setp.
+	$(eval export REL_LEF_FILE=$(shell realpath --relative-to=$(FP_RUN_DIR)/results $(LEF_FILE)))
+	$(eval export DEF_FILE=$(shell realpath $(ROUTE_FINAL_OUT_DEF)))
+	klayout -rm $(VIEWER_FLOW_DIR)/scripts/open_lef_def.rb
+
+#=======================================
+# VIEW CHIP FINISH
+#=======================================
+
+view.chip_finish:
+	@## View the finalized gds.
+	klayout -nn $(VIEWER_FLOW_DIR)/scripts/tech.lyt $(CHIP_FINISH_RUN_DIR)/results/chip_finish.final.gds
+
+#=======================================
+# VIEW DRC
+#=======================================
+
+view.drc:
+	@## View the results from the latest drc run.
+	klayout \
+		-nn $(VIEWER_FLOW_DIR)/scripts/tech.lyt \
+		$(CHIP_FINISH_RUN_DIR)/results/chip_finish.final.gds \
+		-m $(DRC_RUN_DIR)/drc_results.ascii
+
+#=======================================
+# VIEW LVS
+#=======================================
+
+#view.lvs:
+#	@## View the results from the latest lvs run.
+#	#TODO
+

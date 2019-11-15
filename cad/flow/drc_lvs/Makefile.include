@@ -1,0 +1,79 @@
+export DRC_LVS_FLOW_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
+
+##==============================================================================
+##  ___  ___  ___     __  _ __   _____   _____                  _      
+## |   \| _ \/ __|   / / | |\ \ / / __| |_   _|_ _ _ _ __ _ ___| |_ ___
+## | |) |   / (__   / /  | |_\ V /\__ \   | |/ _` | '_/ _` / -_)  _(_-<
+## |___/|_|_\\___| /_/   |____\_/ |___/   |_|\__,_|_| \__, \___|\__/__/
+##                                                    |___/            
+##==============================================================================
+
+#=======================================
+# DRC
+#=======================================
+
+export DRC_RUN_DIR   ?=$(BUILD_DIR)/drc
+export DRC_NUM_CORES ?=4
+
+drc: chip_finish.final
+	@## Perform design rule checks.
+	mkdir -p $(DRC_RUN_DIR)/logs
+	$(eval export LAYOUT_PRIMARY:=$(DESIGN_NAME))
+	$(eval export LAYOUT_PATH:=$(CHIP_FINISH_FINAL_OUT_GDS))
+	cd $(DRC_RUN_DIR) && \
+		(time calibre \
+			-drc \
+			-turbo $(DRC_NUM_CORES) \
+			-hyper \
+			-hier \
+			$(DRC_LVS_FLOW_DIR)/scripts/run_drc.cal \
+		) 2>&1 | tee -i logs/$@.log
+	touch $(BUILD_VPATH)/$@
+
+#=======================================
+# LVS
+#=======================================
+
+# TODO: Fix this flow ( get something that should pass LVS first :] )
+
+#export LVS_RUN_DIR   ?=$(BUILD_DIR)/lvs
+#export LVS_NUM_CORES ?=4
+#
+#lvs: chip_finish.final
+#	@## Perform layout-vs-schematic.
+#	mkdir -p $(LVS_RUN_DIR)/logs
+#	$(eval export PDK_DIR:=$(PDK_ROOT_DIR)/FreePDK45)
+#	$(eval export LAYOUT_PRIMARY:=$(DESIGN_NAME))
+#	$(eval export SOURCE_PRIMARY:=$(DESIGN_NAME))
+#	$(eval export LAYOUT_PATH:=$(CHIP_FINISH_FINAL_OUT_GDS))
+#	$(eval export SOURCE_PATH:=$(LVS_RUN_DIR)/source.cdl)
+#	cd $(LVS_RUN_DIR) && \
+#		(time v2lvs \
+#			-sl \
+#			-lsr $(PDK_ROOT_DIR)/NangateOpenCellLibrary_PDKv1_3_v2010_12/Back_End/spice/NangateOpenCellLibrary.spi \
+#			-s $(PDK_ROOT_DIR)/NangateOpenCellLibrary_PDKv1_3_v2010_12/Back_End/spice/NangateOpenCellLibrary.spi \
+#			-v $(CHIP_FINISH_RUN_DIR)/results/chip_finish.final.v \
+#			-o $(SOURCE_PATH) \
+#		) 2>&1 | tee -i logs/$@.v2lvs.log
+#	cd $(LVS_RUN_DIR) && \
+#		(time calibre \
+#			-lvs \
+#			-hier \
+#			$(DRC_LVS_FLOW_DIR)/scripts/run_lvs.cal \
+#		) 2>&1 | tee -i logs/$@.log
+#	touch $(BUILD_VPATH)/$@
+
+#=======================================
+# CLEAN
+#=======================================
+
+clean.drc: are_you_sure
+	@## Cleanup drc run traget.
+	rm -rf $(DRC_RUN_DIR)
+	rm -f  $(BUILD_VPATH)/$(subst clean.,,$@)
+
+clean.lvs:
+	@## Cleanup lvs run traget.
+	rm -rf $(LVS_RUN_DIR)
+	rm -f  $(BUILD_VPATH)/$(subst clean.,,$@)
+
