@@ -11,9 +11,17 @@ export FP_FLOW_DIR :=$(realpath $(shell dirname $(realpath $(lastword $(MAKEFILE
 export FP_RUN_DIR ?=$(BUILD_DIR)/floorplan
 
 # Can (should?) be overridden by the designs configuration file.
-FP_ASPECT_RATIO ?= 1.0
-FP_UTILIZATION  ?= 0.5
-FP_CORE_SPACE   ?= 0.0
+
+# Specify margin, util and aspect ratio
+FP_ASPECT_RATIO ?=
+FP_UTILIZATION  ?=
+FP_CORE_SPACE   ?=
+
+# -OR-
+
+# Specify die and core area
+FP_DIE_AREA  ?=
+FP_CORE_AREA ?=
 
 #=======================================
 # FP
@@ -51,6 +59,15 @@ export FP_V2DEF_OUT_V   := $(FP_RUN_DIR)/results/fp.v2def.v
 export FP_V2DEF_OUT_SDC := $(FP_RUN_DIR)/results/fp.v2def.sdc
 export FP_V2DEF_OUT_DEF := $(FP_RUN_DIR)/results/fp.v2def.def 
 
+ifneq ($(FP_UTILIZATION),)
+    FP_V2DEF_INIT_FP_ARGS :=-utilization $(FP_UTILIZATION)
+    FP_V2DEF_INIT_FP_ARGS +=-aspect_ratio $(FP_ASPECT_RATIO)
+    FP_V2DEF_INIT_FP_ARGS +=-core_space $(FP_CORE_SPACE)
+else
+    FP_V2DEF_INIT_FP_ARGS :=-die_area "$(FP_DIE_AREA)"
+    FP_V2DEF_INIT_FP_ARGS +=-core_area "$(FP_CORE_AREA)"
+endif
+
 fp.v2def: fp.setup
 	@## Convert the synthesized netlist to a def file.
 	cd $(FP_RUN_DIR) && \
@@ -63,9 +80,7 @@ fp.v2def: fp.setup
 			-site $(PLACE_SITE) \
 			-tracks $(TRACKS_INFO_FILE) \
 			-def $(FP_V2DEF_OUT_DEF) \
-			-utilization $(FP_UTILIZATION) \
-			-aspect_ratio $(FP_ASPECT_RATIO) \
-			-core_space $(FP_CORE_SPACE) \
+			$(FP_V2DEF_INIT_FP_ARGS) \
 		) 2>&1 | tee -i logs/$@.log
 	sed -i 's/VERSION 5.5/VERSION 5.6/' $(FP_V2DEF_OUT_DEF)
 	cp $(FP_V2DEF_IN_V) $(FP_V2DEF_OUT_V)
@@ -195,7 +210,6 @@ endif
 
 # Can (should?) be overridden by the designs configuration file.
 FP_PDN_SKIP ?=true
-FP_PDN_CFG  ?=
 
 export FP_PDN_IN_V    := $(FP_MACRO_OUT_V)
 export FP_PDN_IN_SDC  := $(FP_MACRO_OUT_SDC)
@@ -217,7 +231,23 @@ else
 
 fp.pdn: fp.macro
 	@## Synthesize the power delivery network.
-	cd $(FP_RUN_DIR) && (time apply_pdn $(FP_PDN_CFG)) 2>&1 | tee -i logs/$@.log
+	cp $(FP_FLOW_DIR)/scripts/pdn.cfg $(FP_RUN_DIR)/pdn.cfg
+	$(eval export DIE_URX  :=$(shell echo "`cat $(FP_PDN_IN_DEF) | grep "^DIEAREA" | awk '{print $$7}'`/2000" | bc -l))
+	$(eval export DIE_URY  :=$(shell echo "`cat $(FP_PDN_IN_DEF) | grep "^DIEAREA" | awk '{print $$8}'`/2000" | bc -l))
+	$(eval export CORE_URX :=$(shell echo "$(DIE_URX)-$(FP_CORE_SPACE)" | bc -l))
+	$(eval export CORE_URY :=$(shell echo "$(DIE_URY)-$(FP_CORE_SPACE)" | bc -l))
+	sed -i "s/<DESIGN>/$(DESIGN_NAME)/g" $(FP_RUN_DIR)/pdn.cfg
+	sed -i "s/<IN_DEF>/$(subst /,\/,$(FP_PDN_IN_DEF))/g" $(FP_RUN_DIR)/pdn.cfg
+	sed -i "s/<LEF>/$(subst /,\/,$(LEF_FILE))/g" $(FP_RUN_DIR)/pdn.cfg
+	sed -i "s/<CORE_LLX>/$(FP_CORE_SPACE)/g" $(FP_RUN_DIR)/pdn.cfg
+	sed -i "s/<CORE_LLY>/$(FP_CORE_SPACE)/g" $(FP_RUN_DIR)/pdn.cfg
+	sed -i "s/<CORE_URX>/$(CORE_URX)/g" $(FP_RUN_DIR)/pdn.cfg
+	sed -i "s/<CORE_URY>/$(CORE_URY)/g" $(FP_RUN_DIR)/pdn.cfg
+	sed -i "s/<DIE_LLX>/0/g" $(FP_RUN_DIR)/pdn.cfg
+	sed -i "s/<DIE_LLY>/0/g" $(FP_RUN_DIR)/pdn.cfg
+	sed -i "s/<DIE_URX>/$(DIE_URX)/g" $(FP_RUN_DIR)/pdn.cfg
+	sed -i "s/<DIE_URY>/$(DIE_URY)/g" $(FP_RUN_DIR)/pdn.cfg
+	cd $(FP_RUN_DIR) && (time apply_pdn pdn.cfg) 2>&1 | tee -i logs/$@.log
 	mv $(DESIGN_NAME)_post_T8.def $(FP_PDN_OUT_DEF)
 	cp $(FP_PDN_IN_V) $(FP_PDN_OUT_V)
 	cp $(FP_PDN_IN_SDC) $(FP_PDN_OUT_SDC)
