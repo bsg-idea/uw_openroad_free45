@@ -26,6 +26,7 @@ sv2v: build_setup | prep
 		DESIGN_FILELIST=$(SV2V_RUN_DIR)/design.flist \
 		DESIGN_CONSTRAINTS_FILE=$(BSG_DESIGNS_TARGET_DIR)/tcl/constraints.tcl \
 		DESIGN_NAME=$(DESIGN_NAME) \
+		DESIGN_ELAB_NAME=$(DESIGN_ELAB_NAME) \
 	) 2>&1 | tee -i $(SV2V_RUN_DIR)/logs/$@.log
 	cp $(SV2V_RUN_DIR)/results/run/$(DESIGN_NAME).sv2v.v $(SV2V_RUN_DIR)/results/$(DESIGN_NAME).v
 	-find $(PREP_DIR)/fakeram -name *.bb.v | xargs -I {} cat {} >> $(SV2V_RUN_DIR)/results/$(DESIGN_NAME).v
