@@ -77,7 +77,7 @@ prep.mod_pdk: prep.unpack_pdk prep.fakeram
 	@## Perform pdk modifications for better compatibility and QoR with the EDA
 	@## tools in the chip building flow.
 	mkdir -p $(PREP_DIR)/{lib,lef,gds}
-	$(OPENROAD_FLOW)/scripts/mergeLib.pl free45_merged $(PDK_LIB_FILE) $(shell find $(PREP_DIR)/fakeram -name *.lib) > $(LIB_FILE)
+	$(PREP_FLOW_DIR)/scripts/mergeLib.pl free45_merged $(PDK_LIB_FILE) $(shell find $(PREP_DIR)/fakeram -name *.lib) > $(LIB_FILE)
 	cat $(PDK_LEF_FILE) | grep -v "END LIBRARY" > $(PREP_DIR)/lef/merged.lef
 	find $(PREP_DIR)/fakeram -name *.lef | xargs -I {} awk '/MACRO free45*/, /END free45*/' {} >> $(PREP_DIR)/lef/merged.lef
 	echo -e "\nEND LIBRARY" >> $(PREP_DIR)/lef/merged.lef
