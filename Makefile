@@ -24,17 +24,7 @@ export VPATH       := $(PREP_VPATH) $(BUILD_VPATH)
 # Include Other Makefiles
 #=======================================
 
-include $(TOP_DIR)/cad/setup/Makefile.include
-include $(TOP_DIR)/cad/flow/prep/Makefile.include
-include $(TOP_DIR)/cad/flow/sv2v/Makefile.include
-include $(TOP_DIR)/cad/flow/synth/Makefile.include
-include $(TOP_DIR)/cad/flow/fp/Makefile.include
-include $(TOP_DIR)/cad/flow/place/Makefile.include
-include $(TOP_DIR)/cad/flow/cts/Makefile.include
-include $(TOP_DIR)/cad/flow/route/Makefile.include
-include $(TOP_DIR)/cad/flow/chip_finish/Makefile.include
-include $(TOP_DIR)/cad/flow/drc_lvs/Makefile.include
-include $(TOP_DIR)/cad/flow/viewer/Makefile.include
+include $(TOP_DIR)/cad/Makefile.include
 
 .DEFAULT_GOAL:=chip_finish.final
 

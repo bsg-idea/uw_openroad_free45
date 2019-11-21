@@ -1,7 +1,6 @@
 export BSG_DESIGNS_TARGET_DIR  :=$(realpath $(TOP_DIR)/../)
 
 include $(BSG_DESIGNS_TARGET_DIR)/mk/uwrf.config.mk
-#include $(BSG_DESIGNS_TARGET_DIR)/mk/hier.mk
 
 #===============================================================================
 # CAD Tool Environment Setup
@@ -61,3 +60,19 @@ export CAP_PER_MICRON := 0.235146e-12
 export RES_PER_MICRON := 1.59
 export CAP_UNIT_PER_MICRON := 0.00020
 export RES_UNIT_PER_MICRON := 0.0020
+
+#===============================================================================
+# Include the rest of the cad flow
+#===============================================================================
+
+include $(TOP_DIR)/cad/flow/prep/Makefile.include
+include $(TOP_DIR)/cad/flow/sv2v/Makefile.include
+include $(TOP_DIR)/cad/flow/synth/Makefile.include
+include $(TOP_DIR)/cad/flow/fp/Makefile.include
+include $(TOP_DIR)/cad/flow/place/Makefile.include
+include $(TOP_DIR)/cad/flow/cts/Makefile.include
+include $(TOP_DIR)/cad/flow/route/Makefile.include
+include $(TOP_DIR)/cad/flow/chip_finish/Makefile.include
+include $(TOP_DIR)/cad/flow/drc_lvs/Makefile.include
+include $(TOP_DIR)/cad/flow/viewer/Makefile.include
+
