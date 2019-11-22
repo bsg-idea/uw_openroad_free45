@@ -1,5 +1,5 @@
 #===============================================================================
-# TOOL Pointers
+# TOOL POINTERS
 #===============================================================================
 
 export TOOLS_DIR       :=$(TOP_DIR)/tools
@@ -10,7 +10,7 @@ export TCLLIBPATH      :=$(OPENROAD)/pdn/scripts
 export LD_LIBRARY_PATH :=$(TOOLS_DIR)/lib:$(LD_LIBRARY_PATH)
 
 #===============================================================================
-# PDK Pointers
+# PDK POINTERS
 #===============================================================================
 
 # Unpacked pdk root dir
@@ -37,20 +37,20 @@ export PDK_GDS_FILE :=$(NANGATE_BE_DIR)/gds/NangateOpenCellLibrary.gds
 export GDS_FILE     :=$(PREP_DIR)/gds/nangate45.gds
 
 #===============================================================================
-# PLATFORM Pointers
+# PLATFORM POINTERS
 #===============================================================================
 
 export PLACE_SITE       := FreePDK45_38x28_10R_NP_162NW_34O
 export TRACKS_INFO_FILE := $(OPENROAD_FLOW)/platforms/nangate45/tracks.info
 export CTS_TECH_DIR     := $(OPENROAD_FLOW)/platforms/nangate45/tritonCTS
 
-export CAP_PER_MICRON := 0.235146e-12
-export RES_PER_MICRON := 1.59
+export CAP_PER_MICRON      := 0.235146e-12
+export RES_PER_MICRON      := 1.59
 export CAP_UNIT_PER_MICRON := 0.00020
 export RES_UNIT_PER_MICRON := 0.0020
 
 #===============================================================================
-# Include the rest of the cad flow
+# INCLUDE CAD FLOW
 #===============================================================================
 
 include $(TOP_DIR)/cad/flow/prep/Makefile.include

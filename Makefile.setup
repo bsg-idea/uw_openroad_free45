@@ -1,0 +1,48 @@
+#===============================================================================
+# DESIGN SETUP
+# ------------
+# Setup the flow to build the desired design.
+#===============================================================================
+
+# Setup the design directory. This is the directory where your design resides.
+# Designs must adhere to a particular structure such that the flow may find all
+# the required information. For more information, please read the "???" section
+# in the README.
+export DESIGN_DIR := $(TOP_DIR)/examples/gcd_sverilog
+
+# Include the design configuration file. This usually lives in you design
+# directory. For more information, please read the "???" section in the README.
+include $(DESIGN_DIR)/mk/uw_free45.config.mk
+
+#===============================================================================
+# COMMERCIAL CAD TOOL SETUP
+# -------------------------
+# These tools are only required to convert designs using bsg_sv2v and to run
+# signoff DRC/LVS. If you have a design that does not need converting and you
+# do not want to run signoff DRC/LVS then you do not need to setup these tools.
+#===============================================================================
+
+# For BSG Users
+# -------------
+# Use bsg_cadenv (placed one directory up) to setup all of our cad tools. No
+# additional setup required, ignore the variables below.
+
+-include $(TOP_DIR)/../bsg_cadenv/cadenv.mk
+
+# For Non-BSG Users
+# -----------------
+# Ignore the included path above. You will need to set the following variables
+# to their appropriate values for your machine.
+
+# License file
+export LM_LICENSE_FILE ?=
+
+# DesignCompiler dc_shell binary
+export DC_SHELL ?=
+
+# Path to the root directory calibre was installed into
+export MGC_HOME ?=
+
+# Path to calibre executable
+export CALIBRE ?= $(MGC_HOME)/bin/calibre
+

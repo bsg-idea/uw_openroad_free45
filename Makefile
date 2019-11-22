@@ -8,29 +8,19 @@ export TOP_DIR :=$(shell git rev-parse --show-toplevel)
 ##                        |_|                                                    
 ##==============================================================================
 
-#=======================================
-# Special directories
-#=======================================
-
 export PREP_DIR    := $(CURDIR)/sources
-export PREP_VPATH  := $(PREP_DIR)/touchfiles
-
 export BUILD_DIR   := $(CURDIR)/current_build
-export BUILD_VPATH := $(BUILD_DIR)/touchfiles
 
+export PREP_VPATH  := $(PREP_DIR)/touchfiles
+export BUILD_VPATH := $(BUILD_DIR)/touchfiles
 export VPATH       := $(PREP_VPATH) $(BUILD_VPATH)
 
-#=======================================
-# Include Other Makefiles
-#=======================================
+.DEFAULT_GOAL := chip_finish.final
 
+include $(TOP_DIR)/Makefile.setup
 include $(TOP_DIR)/cad/Makefile.include
 
-.DEFAULT_GOAL:=chip_finish.final
-
-#===============================================================================
-# Makefile Targets
-#===============================================================================
+export DESIGN_NAME
 
 #=======================================
 # Build setup
