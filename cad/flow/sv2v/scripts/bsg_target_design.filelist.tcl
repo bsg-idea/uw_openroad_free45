@@ -2,8 +2,8 @@
 # Warning: do not print anything to stdout in this file!
 
 # source target design's filelist and filelist_deltas
-source $::env(BSG_DESIGNS_TARGET_DIR)/tcl/filelist.tcl
-source $::env(BSG_DESIGNS_TARGET_DIR)/tcl/hard/free_45/filelist_deltas.tcl
+source $::env(DESIGN_DIR)/tcl/filelist.tcl
+source $::env(DESIGN_DIR)/tcl/hard/free_45/filelist_deltas.tcl
 
 # get names of all modules to hard-swap
 set hard_swap_module_list [list]

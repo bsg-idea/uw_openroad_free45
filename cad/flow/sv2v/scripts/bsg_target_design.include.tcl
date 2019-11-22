@@ -2,7 +2,7 @@
 # Warning: do not print anything to stdout in this file!
 
 # source target design's include dirs
-source $::env(BSG_DESIGNS_TARGET_DIR)/tcl/include.tcl
+source $::env(DESIGN_DIR)/tcl/include.tcl
 
 set final_sverilog_include_paths [list]
 foreach incdir $SVERILOG_INCLUDE_PATHS {

@@ -24,7 +24,7 @@ sv2v: build_setup | prep
 	(time $(MAKE) -C $(TOOLS_DIR)/bsg_sv2v \
 		OUTPUT_DIR=$(SV2V_RUN_DIR)/results/run \
 		DESIGN_FILELIST=$(SV2V_RUN_DIR)/design.flist \
-		DESIGN_CONSTRAINTS_FILE=$(BSG_DESIGNS_TARGET_DIR)/tcl/constraints.tcl \
+		DESIGN_CONSTRAINTS_FILE=$(DESIGN_DIR)/tcl/constraints.tcl \
 		DESIGN_NAME=$(DESIGN_NAME) \
 		DESIGN_ELAB_NAME=$(DESIGN_ELAB_NAME) \
 	) 2>&1 | tee -i $(SV2V_RUN_DIR)/logs/$@.log
