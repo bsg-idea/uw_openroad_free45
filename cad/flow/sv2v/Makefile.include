@@ -14,6 +14,19 @@ export SV2V_RUN_DIR ?=$(BUILD_DIR)/sv2v
 # SV2V
 #=======================================
 
+export SV2V_SKIP ?=false
+
+export SV2V_OUT_V   ?=$(SYNTH_RUN_DIR)/results/synth.yosys.v
+export SV2V_OUT_SDC ?=$(SYNTH_RUN_DIR)/results/synth.yosys.sdc
+
+ifeq ($(SV2V_SKIP),true)
+
+sv2v: build_setup | prep
+	@# Intentionally left undocumented
+	touch $(BUILD_VPATH)/$@
+
+else
+
 sv2v: build_setup | prep
 	@## Run bsg_sv2v. This will convert the design into a pickled verilog file
 	@## that is compatible with a larger set of EDA tools. It will also expand
@@ -33,6 +46,8 @@ sv2v: build_setup | prep
 	-cp $(SV2V_RUN_DIR)/results/run/$(DESIGN_NAME).elab.v.sdc $(SV2V_RUN_DIR)/results/$(DESIGN_NAME).sdc
 	! grep --color -i "^error" $(SV2V_RUN_DIR)/logs/$@.log
 	touch $(BUILD_VPATH)/$@
+
+endif
 
 #=======================================
 # COPY

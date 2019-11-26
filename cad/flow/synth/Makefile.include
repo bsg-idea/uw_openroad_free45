@@ -37,8 +37,8 @@ synth.setup: sv2v
 # YOSYS
 #=======================================
 
-export SYNTH_YOSYS_IN_V    :=$(SV2V_RUN_DIR)/results/$(DESIGN_NAME).v
-export SYNTH_YOSYS_IN_SDC  :=$(SV2V_RUN_DIR)/results/$(DESIGN_NAME).sdc
+export SYNTH_YOSYS_IN_V    :=$(SV2V_OUT_V)
+export SYNTH_YOSYS_IN_SDC  :=$(SV2V_OUT_SDC)
 export SYNTH_YOSYS_OUT_V   :=$(SYNTH_RUN_DIR)/results/synth.yosys.v
 export SYNTH_YOSYS_OUT_SDC :=$(SYNTH_RUN_DIR)/results/synth.yosys.sdc
 
