@@ -16,8 +16,8 @@ export SV2V_RUN_DIR ?=$(BUILD_DIR)/sv2v
 
 export SV2V_SKIP ?=false
 
-export SV2V_OUT_V   ?=$(SYNTH_RUN_DIR)/results/synth.yosys.v
-export SV2V_OUT_SDC ?=$(SYNTH_RUN_DIR)/results/synth.yosys.sdc
+export SV2V_OUT_V   ?=$(SV2V_RUN_DIR)/results/$(DESIGN_NAME).v
+export SV2V_OUT_SDC ?=$(SV2V_RUN_DIR)/results/$(DESIGN_NAME).sdc
 
 ifeq ($(SV2V_SKIP),true)
 
@@ -41,9 +41,9 @@ sv2v: build_setup | prep
 		DESIGN_NAME=$(DESIGN_NAME) \
 		DESIGN_ELAB_NAME=$(DESIGN_ELAB_NAME) \
 	) 2>&1 | tee -i $(SV2V_RUN_DIR)/logs/$@.log
-	cp $(SV2V_RUN_DIR)/results/run/$(DESIGN_NAME).sv2v.v $(SV2V_RUN_DIR)/results/$(DESIGN_NAME).v
-	-find $(PREP_DIR)/fakeram -name *.bb.v | xargs -I {} cat {} >> $(SV2V_RUN_DIR)/results/$(DESIGN_NAME).v
-	-cp $(SV2V_RUN_DIR)/results/run/$(DESIGN_NAME).elab.v.sdc $(SV2V_RUN_DIR)/results/$(DESIGN_NAME).sdc
+	cp $(SV2V_RUN_DIR)/results/run/$(DESIGN_NAME).sv2v.v $(SV2V_OUT_V)
+	-find $(PREP_DIR)/fakeram -name *.bb.v | xargs -I {} cat {} >> $(SV2V_OUT_V)
+	-cp $(SV2V_RUN_DIR)/results/run/$(DESIGN_NAME).elab.v.sdc $(SV2V_OUT_SDC)
 	! grep --color -i "^error" $(SV2V_RUN_DIR)/logs/$@.log
 	touch $(BUILD_VPATH)/$@
 
