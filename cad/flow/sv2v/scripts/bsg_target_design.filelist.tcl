@@ -3,7 +3,14 @@
 
 # source target design's filelist and filelist_deltas
 source $::env(DESIGN_DIR)/tcl/filelist.tcl
-source $::env(DESIGN_DIR)/tcl/hard/free_45/filelist_deltas.tcl
+
+if { [file exists $::env(DESIGN_DIR)/tcl/hard/free_45/filelist_deltas.tcl] } {
+  source $::env(DESIGN_DIR)/tcl/hard/free_45/filelist_deltas.tcl
+} else {
+  set HARD_SWAP_FILELIST [join ""]
+  set NETLIST_SOURCE_FILES [join ""]
+  set NEW_SVERILOG_SOURCE_FILES [join ""]
+}
 
 # get names of all modules to hard-swap
 set hard_swap_module_list [list]
