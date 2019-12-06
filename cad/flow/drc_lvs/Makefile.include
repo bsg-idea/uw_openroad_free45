@@ -21,7 +21,7 @@ drc: chip_finish.final
 	$(eval export LAYOUT_PRIMARY:=$(DESIGN_NAME))
 	$(eval export LAYOUT_PATH:=$(CHIP_FINISH_FINAL_OUT_GDS))
 	cd $(DRC_RUN_DIR) && \
-		(time calibre \
+		(time $(CALIBRE) \
 			-drc \
 			-turbo $(DRC_NUM_CORES) \
 			-hyper \
