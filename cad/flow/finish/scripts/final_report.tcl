@@ -3,8 +3,8 @@ set lef_file $::env(LEF_FILE)
 
 read_liberty $lib_file
 read_lef $lef_file
-read_def $::env(CHIP_FINISH_REPORT_IN_DEF)
-read_sdc $::env(CHIP_FINISH_REPORT_IN_SDC)
+read_def $::env(FINISH_REPORT_IN_DEF)
+read_sdc $::env(FINISH_REPORT_IN_SDC)
 
 log_begin ../reports/final_report.rpt
 

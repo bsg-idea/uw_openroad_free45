@@ -131,7 +131,7 @@ clean.route.detail: are_you_sure clean.route.final
 	rm -f $(ROUTE_RUN_DIR)/logs/$(subst clean.,,$@).log
 	rm -f $(BUILD_VPATH)/$(subst clean.,,$@)
 
-clean.route.final: are_you_sure clean.chip_finish
+clean.route.final: are_you_sure clean.finish
 	@## Cleanup the route.final target.
 	rm -f $(ROUTE_FINAL_OUT_V)
 	rm -f $(ROUTE_FINAL_OUT_SDC)

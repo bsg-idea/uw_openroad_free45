@@ -128,9 +128,9 @@ view.route.final:
 # VIEW CHIP FINISH
 #=======================================
 
-view.chip_finish:
+view.finish:
 	@## View the finalized gds.
-	klayout -nn $(VIEWER_FLOW_DIR)/scripts/tech.lyt $(CHIP_FINISH_RUN_DIR)/results/chip_finish.final.gds
+	klayout -nn $(VIEWER_FLOW_DIR)/scripts/tech.lyt $(FINISH_MERGE_OUT_GDS)
 
 #=======================================
 # VIEW DRC
@@ -140,7 +140,7 @@ view.drc:
 	@## View the results from the latest drc run.
 	klayout \
 		-nn $(VIEWER_FLOW_DIR)/scripts/tech.lyt \
-		$(CHIP_FINISH_RUN_DIR)/results/chip_finish.final.gds \
+		$(FINISH_MERGE_OUT_GDS) \
 		-m $(DRC_RUN_DIR)/drc_results.ascii
 
 #=======================================

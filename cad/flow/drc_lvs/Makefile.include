@@ -15,11 +15,11 @@ export DRC_LVS_FLOW_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST
 export DRC_RUN_DIR   ?=$(BUILD_DIR)/drc
 export DRC_NUM_CORES ?=4
 
-drc: chip_finish.final
+drc: finish.final
 	@## Perform design rule checks.
 	mkdir -p $(DRC_RUN_DIR)/logs
 	$(eval export LAYOUT_PRIMARY:=$(DESIGN_NAME))
-	$(eval export LAYOUT_PATH:=$(CHIP_FINISH_FINAL_OUT_GDS))
+	$(eval export LAYOUT_PATH:=$(FINISH_FINAL_OUT_GDS))
 	cd $(DRC_RUN_DIR) && \
 		(time $(CALIBRE) \
 			-drc \
@@ -39,20 +39,20 @@ drc: chip_finish.final
 #export LVS_RUN_DIR   ?=$(BUILD_DIR)/lvs
 #export LVS_NUM_CORES ?=4
 #
-#lvs: chip_finish.final
+#lvs: finish.final
 #	@## Perform layout-vs-schematic.
 #	mkdir -p $(LVS_RUN_DIR)/logs
 #	$(eval export PDK_DIR:=$(PDK_ROOT_DIR)/FreePDK45)
 #	$(eval export LAYOUT_PRIMARY:=$(DESIGN_NAME))
 #	$(eval export SOURCE_PRIMARY:=$(DESIGN_NAME))
-#	$(eval export LAYOUT_PATH:=$(CHIP_FINISH_FINAL_OUT_GDS))
+#	$(eval export LAYOUT_PATH:=$(FINISH_FINAL_OUT_GDS))
 #	$(eval export SOURCE_PATH:=$(LVS_RUN_DIR)/source.cdl)
 #	cd $(LVS_RUN_DIR) && \
 #		(time v2lvs \
 #			-sl \
 #			-lsr $(PDK_ROOT_DIR)/NangateOpenCellLibrary_PDKv1_3_v2010_12/Back_End/spice/NangateOpenCellLibrary.spi \
 #			-s $(PDK_ROOT_DIR)/NangateOpenCellLibrary_PDKv1_3_v2010_12/Back_End/spice/NangateOpenCellLibrary.spi \
-#			-v $(CHIP_FINISH_RUN_DIR)/results/chip_finish.final.v \
+#			-v $(FINISH_RUN_DIR)/results/finish.final.v \
 #			-o $(SOURCE_PATH) \
 #		) 2>&1 | tee -i logs/$@.v2lvs.log
 #	cd $(LVS_RUN_DIR) && \

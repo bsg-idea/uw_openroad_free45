@@ -15,7 +15,7 @@ export PREP_VPATH  := $(PREP_DIR)/touchfiles
 export BUILD_VPATH := $(BUILD_DIR)/touchfiles
 export VPATH       := $(PREP_VPATH) $(BUILD_VPATH)
 
-.DEFAULT_GOAL := chip_finish.final
+.DEFAULT_GOAL := finish.final
 
 include $(TOP_DIR)/Makefile.setup
 include $(TOP_DIR)/cad/Makefile.include
@@ -124,8 +124,8 @@ help.cts: help.%: $(TOP_DIR)/cad/flow/%/Makefile.include.help
 help.route: help.%: $(TOP_DIR)/cad/flow/%/Makefile.include.help
 	@## Print information about route makefile targets.
 
-help.chip_finish: help.%: $(TOP_DIR)/cad/flow/%/Makefile.include.help
-	@## Print information about chip_finish makefile targets.
+help.finish: help.%: $(TOP_DIR)/cad/flow/%/Makefile.include.help
+	@## Print information about finish makefile targets.
 
 help.drc_lvs: help.%: $(TOP_DIR)/cad/flow/%/Makefile.include.help
 	@## Print information about drc_lvs makefile targets.

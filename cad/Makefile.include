@@ -61,7 +61,7 @@ include $(TOP_DIR)/cad/flow/fp/Makefile.include
 include $(TOP_DIR)/cad/flow/place/Makefile.include
 include $(TOP_DIR)/cad/flow/cts/Makefile.include
 include $(TOP_DIR)/cad/flow/route/Makefile.include
-include $(TOP_DIR)/cad/flow/chip_finish/Makefile.include
+include $(TOP_DIR)/cad/flow/finish/Makefile.include
 include $(TOP_DIR)/cad/flow/drc_lvs/Makefile.include
 include $(TOP_DIR)/cad/flow/viewer/Makefile.include
 
