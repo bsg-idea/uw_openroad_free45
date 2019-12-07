@@ -16,8 +16,13 @@ export SV2V_RUN_DIR ?=$(BUILD_DIR)/sv2v
 
 export SV2V_SKIP ?=false
 
-export SV2V_OUT_V   ?=$(SV2V_RUN_DIR)/results/$(DESIGN_NAME).v
-export SV2V_OUT_SDC ?=$(SV2V_RUN_DIR)/results/$(DESIGN_NAME).sdc
+ifeq ($(SV2V_SKIP),true)
+  export SV2V_OUT_V   ?=$(PICKLED_V)
+  export SV2V_OUT_SDC ?=$(PICKLED_SDC)
+else
+  export SV2V_OUT_V   ?=$(SV2V_RUN_DIR)/results/$(DESIGN_NAME).v
+  export SV2V_OUT_SDC ?=$(SV2V_RUN_DIR)/results/$(DESIGN_NAME).sdc
+endif
 
 ifeq ($(SV2V_SKIP),true)
 
