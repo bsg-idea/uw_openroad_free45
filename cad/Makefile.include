@@ -54,6 +54,7 @@ export RES_UNIT_PER_MICRON := 0.0020
 #===============================================================================
 
 include $(TOP_DIR)/cad/flow/prep/Makefile.include
+include $(TOP_DIR)/cad/flow/fakeram/Makefile.include
 include $(TOP_DIR)/cad/flow/sv2v/Makefile.include
 include $(TOP_DIR)/cad/flow/synth/Makefile.include
 include $(TOP_DIR)/cad/flow/fp/Makefile.include

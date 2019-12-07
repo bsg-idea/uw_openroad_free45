@@ -1,0 +1,45 @@
+export FAKERAM_FLOW_DIR :=$(realpath $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST)))))
+
+##==============================================================================
+##  ___     _                        _____                  _      
+## | __|_ _| |_____ _ _ __ _ _ __   |_   _|_ _ _ _ __ _ ___| |_ ___
+## | _/ _` | / / -_) '_/ _` | '  \    | |/ _` | '_/ _` / -_)  _(_-<
+## |_|\__,_|_\_\___|_| \__,_|_|_|_|   |_|\__,_|_| \__, \___|\__/__/
+##                                                |___/            
+##==============================================================================
+
+export FAKERAM_RUN_DIR ?=$(PREP_DIR)/fakeram
+
+#=======================================
+# FAKERAM
+#=======================================
+
+ifeq ($(FAKERAM_CONFIG),)
+
+fakeram: prep.tools
+	@# Intentionally left undocumented
+	mkdir -p $(FAKERAM_RUN_DIR)
+	mkdir -p $(PREP_VPATH) && touch $(PREP_VPATH)/$@
+
+else
+
+fakeram: prep.tools
+	@## Generate memories using bsg_fakeram. The FAKERAM_CONFIG variable (which
+	@## should be set in the desing's config makefile) contains all of the
+	@## memories that we need to generate for the given design.
+	mkdir -p $(FAKERAM_RUN_DIR)
+	cd $(TOOLS_DIR)/bsg_fakeram && make CONFIG=$(FAKERAM_CONFIG)
+	mv $(TOOLS_DIR)/bsg_fakeram/results/* $(FAKERAM_RUN_DIR)
+	mkdir -p $(PREP_VPATH) && touch $(PREP_VPATH)/$@
+
+endif
+
+#=======================================
+# CLEAN
+#=======================================
+
+clean.fakeram: are_you_sure
+	@## Cleanup fakeram generation.
+	rm -rf $(FAKERAM_RUN_DIR)
+	rm -f $(PREP_VPATH)/$(subst clean.,,$@)
+
