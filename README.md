@@ -4,8 +4,7 @@ The UW OpenROAD Free45 CAD flow is an open-source RTL to GDS work flow that
 leverages the [OpenROAD Project](https://theopenroadproject.org/) as the main
 EDA tool to implement ASIC designs using the
 [FreePDK45](https://www.eda.ncsu.edu/wiki/FreePDK45:Contents) and [Nangate open
-cell library](http://projects.si2.org/openeda.si2.org/projects/nangatelib) as
-the process technology.
+cell library](http://www.si2.org/open-cell-library/) as the process technology.
 
 ## Free45nm PDK and Standard Cell Library
 
@@ -14,7 +13,7 @@ standard cell library. Below are the link for the two kits that you will need
 to download and place inside the `pdk/` directory.
 
 1. FreePDK45 v1.4 - [ncsu-FreePDK45-1.4.tar.gz](https://www.eda.ncsu.edu/wiki/FreePDK45:Contents)
-2. Nangate open cell library v2010.12 - [NangateOpenCellLibrary_PDKv1_3_v2010_12.tgz](http://projects.si2.org/openeda.si2.org/projects/nangatelib)
+2. Nangate open cell library v2010.12 - [NangateOpenCellLibrary_PDKv1_3_v2010_12.tgz](http://www.si2.org/open-cell-library/)
 
 ## Makefile Setup (`Makefile.setup`)
 
