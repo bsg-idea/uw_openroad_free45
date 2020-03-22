@@ -2,7 +2,7 @@
 # TOOL POINTERS
 #===============================================================================
 
-export TOOLS_DIR       :=$(TOP_DIR)/tools
+export TOOLS_DIR       :=$(PREP_DIR)/tools
 export OPENROAD        :=$(TOOLS_DIR)/openroad/OpenROAD-2019-09-05_20-10
 export OPENROAD_FLOW   :=$(TOOLS_DIR)/alpha-release/flow
 export PATH            :=$(OPENROAD)/bin:$(OPENROAD)/bin/Linux-x86-64:$(OPENROAD)/pdn/scripts:$(PATH)
@@ -13,12 +13,13 @@ export LD_LIBRARY_PATH :=$(TOOLS_DIR)/lib:$(LD_LIBRARY_PATH)
 # PDK POINTERS
 #===============================================================================
 
-# Unpacked pdk root dir
-export PDK_ROOT_DIR :=$(TOP_DIR)/pdk/pdk_root
-
-# Directory pointers
 export NANGATE_PDK_TAR  :=$(TOP_DIR)/pdk/NangateOpenCellLibrary_PDKv1_3_v2010_12.tgz
 export FREE45_PDK_TAR   :=$(TOP_DIR)/pdk/ncsu-FreePDK45-1.4.tar.gz
+
+# Unpacked pdk root dir
+export PDK_ROOT_DIR :=$(PREP_DIR)/pdk
+
+# Directory pointers
 export NANGATE_FE_DIR   :=$(PDK_ROOT_DIR)/NangateOpenCellLibrary_PDKv1_3_v2010_12/Front_End
 export NANGATE_BE_DIR   :=$(PDK_ROOT_DIR)/NangateOpenCellLibrary_PDKv1_3_v2010_12/Back_End
 export NCSU_BASEKIT_DIR :=$(PDK_ROOT_DIR)/FreePDK45/ncsu_basekit

@@ -8,7 +8,7 @@ export TOP_DIR :=$(shell git rev-parse --show-toplevel)
 ##                        |_|                                                    
 ##==============================================================================
 
-export PREP_DIR    := $(CURDIR)/sources
+export PREP_DIR    := $(CURDIR)/flow_prep
 export BUILD_DIR   := $(CURDIR)/current_build
 
 export PREP_VPATH  := $(PREP_DIR)/touchfiles
@@ -34,7 +34,7 @@ new_build:
 	-rm $(BUILD_DIR)
 	$(MAKE) build_setup
 
-build_setup:
+build_setup: | prep
 	@# Intentionally left undocumented
 	mkdir -p build.$(DATE)
 	ln -nsf build.$(DATE) $(BUILD_DIR)
