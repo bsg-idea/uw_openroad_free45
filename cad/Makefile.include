@@ -14,7 +14,7 @@ export LD_LIBRARY_PATH :=$(TOOLS_DIR)/lib:$(LD_LIBRARY_PATH)
 #===============================================================================
 
 # Unpacked pdk root dir
-export PDK_ROOT_DIR :=$(TOP_DIR)/pdk/unpacked
+export PDK_ROOT_DIR :=$(TOP_DIR)/pdk/pdk_root
 
 # Directory pointers
 export NANGATE_PDK_TAR  :=$(TOP_DIR)/pdk/NangateOpenCellLibrary_PDKv1_3_v2010_12.tgz
@@ -34,7 +34,7 @@ export LEF_FILE     :=$(PREP_DIR)/lef/nangate45.lef
 
 # Gds Files
 export PDK_GDS_FILE :=$(NANGATE_BE_DIR)/gds/NangateOpenCellLibrary.gds
-export GDS_FILE     :=$(PREP_DIR)/gds/nangate45.gds
+export GDS_FILE     :=$(NANGATE_BE_DIR)/gds/NangateOpenCellLibrary.fix_dbu.gds
 
 #===============================================================================
 # PLATFORM POINTERS
