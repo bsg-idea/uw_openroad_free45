@@ -16,10 +16,6 @@ prep: prep.pdk prep.fakeram prep.sv2v prep.openroad
 	@## Runs all of the preparation steps.
 	mkdir -p $(PREP_VPATH) && touch $(PREP_VPATH)/$@
 
-clean.prep: are_you_sure clean.prep.pdk clean.prep.fakeram clean.prep.sv2v clean.prep.openroad
-	@## Cleanup all of the preparation steps.
-	rm -f $(PREP_VPATH)/$(subst clean.,,$@)
-
 prep.pdk: $(NANGATE_PDK_TAR) $(FREE45_PDK_TAR)
 	@## Unpack the pdk tar files into the pdk root dir.
 	mkdir -p $(PDK_ROOT_DIR)
@@ -27,11 +23,6 @@ prep.pdk: $(NANGATE_PDK_TAR) $(FREE45_PDK_TAR)
 	cd $(PDK_ROOT_DIR) && tar xvf $(FREE45_PDK_TAR)
 	klayout -zz -rd in=$(PDK_GDS_FILE) -rd out=$(GDS_FILE) -r $(PREP_FLOW_DIR)/scripts/convert_gds_dbu.rb
 	mkdir -p $(PREP_VPATH) ; touch $(PREP_VPATH)/$@
-
-clean.prep.pdk: are_you_sure
-	@## Cleanup pdk preparation.
-	rm -rf $(PDK_ROOT_DIR)
-	rm -f $(PREP_VPATH)/$(subst clean.,,$@)
 
 prep.fakeram:
 	@## Download and prep bsg_fakeram.
@@ -41,11 +32,6 @@ prep.fakeram:
 		cd bsg_fakeram && git checkout 0f5496c && $(MAKE) tools
 	mkdir -p $(PREP_VPATH) ; touch $(PREP_VPATH)/$@
 
-clean.prep.fakeram: are_you_sure
-	@## Cleanup bsg_fakeram preparation.
-	rm -rf $(TOOLS_DIR)/bsg_fakeram
-	rm -f $(PREP_VPATH)/$(subst clean.,,$@)
-
 prep.sv2v:
 	@## Download and prep bsg_sv2v.
 	mkdir -p $(TOOLS_DIR)
@@ -53,11 +39,6 @@ prep.sv2v:
 		git clone https://github.com/bespoke-silicon-group/bsg_sv2v && \
 		cd bsg_sv2v && git checkout 4ebcddf && $(MAKE) tools
 	mkdir -p $(PREP_VPATH) ; touch $(PREP_VPATH)/$@
-
-clean.prep.sv2v: are_you_sure
-	@## Cleanup bsg_sv2v preparation.
-	rm -rf $(TOOLS_DIR)/bsg_sv2v
-	rm -f $(PREP_VPATH)/$(subst clean.,,$@)
 
 prep.openroad:
 	@## Download and prep OpenROAD.
@@ -68,6 +49,29 @@ prep.openroad:
 	cd $(TOOLS_DIR)/openroad && \
 		tar -xvf ~/IDEA/openroad_builds/build_20_3_18_d21019e/openroad.tar.gz
 	mkdir -p $(PREP_VPATH) ; touch $(PREP_VPATH)/$@
+
+#=======================================
+# CLEAN
+#=======================================
+
+clean.prep: are_you_sure clean.prep.pdk clean.prep.fakeram clean.prep.sv2v clean.prep.openroad
+	@## Cleanup all of the preparation steps.
+	rm -f $(PREP_VPATH)/$(subst clean.,,$@)
+
+clean.prep.pdk: are_you_sure
+	@## Cleanup pdk preparation.
+	rm -rf $(PDK_ROOT_DIR)
+	rm -f $(PREP_VPATH)/$(subst clean.,,$@)
+
+clean.prep.fakeram: are_you_sure
+	@## Cleanup bsg_fakeram preparation.
+	rm -rf $(TOOLS_DIR)/bsg_fakeram
+	rm -f $(PREP_VPATH)/$(subst clean.,,$@)
+
+clean.prep.sv2v: are_you_sure
+	@## Cleanup bsg_sv2v preparation.
+	rm -rf $(TOOLS_DIR)/bsg_sv2v
+	rm -f $(PREP_VPATH)/$(subst clean.,,$@)
 
 clean.prep.openroad: are_you_sure
 	@## Cleanup OpenROAD preparation.
