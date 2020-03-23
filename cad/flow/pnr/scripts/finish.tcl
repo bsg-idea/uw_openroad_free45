@@ -1,3 +1,8 @@
 source $::env(PNR_FLOW_DIR)/scripts/common_utils.tcl
+
+puts "[INFO] Opening design."
 open_design results/route.def results/route.sdc
-finish finish
+
+puts "[INFO] Wrapping-up."
+wrapup finish
+

@@ -15,7 +15,7 @@ export PREP_VPATH  := $(PREP_DIR)/touchfiles
 export BUILD_VPATH := $(BUILD_DIR)/touchfiles
 export VPATH       := $(PREP_VPATH) $(BUILD_VPATH)
 
-.DEFAULT_GOAL := finish.final
+.DEFAULT_GOAL := finish
 
 include $(TOP_DIR)/Makefile.setup
 include $(TOP_DIR)/cad/Makefile.include
@@ -118,20 +118,8 @@ help.sv2v: help.%: $(TOP_DIR)/cad/flow/%/Makefile.include.help
 help.synth: help.%: $(TOP_DIR)/cad/flow/%/Makefile.include.help
 	@## Print information about synth makefile targets.
 
-help.fp: help.%: $(TOP_DIR)/cad/flow/%/Makefile.include.help
-	@## Print information about fp makefile targets.
-
-help.place: help.%: $(TOP_DIR)/cad/flow/%/Makefile.include.help
-	@## Print information about place makefile targets.
-
-help.cts: help.%: $(TOP_DIR)/cad/flow/%/Makefile.include.help
-	@## Print information about cts makefile targets.
-
-help.route: help.%: $(TOP_DIR)/cad/flow/%/Makefile.include.help
-	@## Print information about route makefile targets.
-
-help.finish: help.%: $(TOP_DIR)/cad/flow/%/Makefile.include.help
-	@## Print information about finish makefile targets.
+help.pnr: help.%: $(TOP_DIR)/cad/flow/%/Makefile.include.help
+	@## Print information about pnr makefile targets.
 
 help.drc_lvs: help.%: $(TOP_DIR)/cad/flow/%/Makefile.include.help
 	@## Print information about drc_lvs makefile targets.
@@ -143,4 +131,7 @@ help.viewer: help.%: $(TOP_DIR)/cad/flow/%/Makefile.include.help
 	@# Intentionally left undocumented
 	@egrep -h '^##' $* || true
 	@egrep -B1 -h '^\s*@##' $* | sed -e 's/@##\s*//g' | sed -e 's/:.*$$/:/g' || true
+
+or:
+	openroad
 

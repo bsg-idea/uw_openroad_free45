@@ -3,7 +3,6 @@
 #===============================================================================
 
 export TOOLS_DIR     :=$(PREP_DIR)/tools
-export OPENROAD_FLOW :=$(TOOLS_DIR)/openroad/flow
 export PATH          :=$(TOOLS_DIR)/openroad/tools/build/OpenROAD/src:$(TOOLS_DIR)/openroad/tools/build/TritonRoute:$(TOOLS_DIR)/openroad/tools/build/yosys/bin:$(PATH)
 
 #===============================================================================
@@ -20,16 +19,23 @@ export PDK_ROOT_DIR :=$(PREP_DIR)/pdk
 export NANGATE_FE_DIR   :=$(PDK_ROOT_DIR)/NangateOpenCellLibrary_PDKv1_3_v2010_12/Front_End
 export NANGATE_BE_DIR   :=$(PDK_ROOT_DIR)/NangateOpenCellLibrary_PDKv1_3_v2010_12/Back_End
 export NCSU_BASEKIT_DIR :=$(PDK_ROOT_DIR)/FreePDK45/ncsu_basekit
+export OPENROAD_FLOW    :=$(TOOLS_DIR)/openroad/flow
+export CTS_TECH_DIR     := $(OPENROAD_FLOW)/platforms/nangate45/tritonCTS
 
 # PDK Files
+export PDK_V_FILE        :=$(NANGATE_FE_DIR)/Verilog/NangateOpenCellLibrary.v
 export PDK_LIB_FILE			 :=$(NANGATE_FE_DIR)/Liberty/NLDM/NangateOpenCellLibrary_typical.lib
 #export PDK_LEF_FILE			 :=$(NANGATE_BE_DIR)/lef/NangateOpenCellLibrary.macro.lef
 export PDK_LEF_FILE			 :=$(OPENROAD_FLOW)/platforms/nangate45/lef/NangateOpenCellLibrary.macro.mod.lef
 export PDK_TECH_LEF_FILE :=$(NANGATE_BE_DIR)/lef/NangateOpenCellLibrary.tech.lef
 export PDK_GDS_FILE      :=$(NANGATE_BE_DIR)/gds/NangateOpenCellLibrary.gds
+export PDK_SPI_FILE      :=$(NANGATE_BE_DIR)/spice/NangateOpenCellLibrary.spi
 
 # PDK Parameters
-export PDK_DONT_USE_CELLS :=FILLCELL_X1 AOI211_X1 OAI211_X1
+export DONT_USE_CELLS   :=FILLCELL_X2 AOI211_X1 OAI211_X1
+export TRACKS_INFO_FILE := $(OPENROAD_FLOW)/platforms/nangate45/tracks.info
+export IP_GLOBAL_CFG    := $(OPENROAD_FLOW)/platforms/nangate45/IP_global.cfg
+export PDN_CFG          := $(PNR_FLOW_DIR)/scripts/pdk.cfg
 
 #===============================================================================
 # INCLUDE CAD FLOW
@@ -40,11 +46,7 @@ include $(TOP_DIR)/cad/flow/fakeram/Makefile.include
 include $(TOP_DIR)/cad/flow/pdkmod/Makefile.include
 include $(TOP_DIR)/cad/flow/sv2v/Makefile.include
 include $(TOP_DIR)/cad/flow/synth/Makefile.include
-include $(TOP_DIR)/cad/flow/fp/Makefile.include
-include $(TOP_DIR)/cad/flow/place/Makefile.include
-include $(TOP_DIR)/cad/flow/cts/Makefile.include
-include $(TOP_DIR)/cad/flow/route/Makefile.include
-include $(TOP_DIR)/cad/flow/finish/Makefile.include
+include $(TOP_DIR)/cad/flow/pnr/Makefile.include
 include $(TOP_DIR)/cad/flow/drc_lvs/Makefile.include
 include $(TOP_DIR)/cad/flow/viewer/Makefile.include
 

@@ -17,7 +17,6 @@ export FAKERAM_RUN_DIR ?=$(BUILD_DIR)/fakeram
 ifeq ($(FAKERAM_CONFIG),)
 
 fakeram: build_setup
-	@# Intentionally left undocumented
 	mkdir -p $(FAKERAM_RUN_DIR)
 	touch $(BUILD_VPATH)/$@
 

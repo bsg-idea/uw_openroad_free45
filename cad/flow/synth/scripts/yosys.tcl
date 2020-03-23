@@ -1,15 +1,15 @@
 yosys -import
 
-# Grab environment variables
-set V_FILE        $::env(SV2V_OUT_V)
-set SDC_FILE      $::env(SV2V_OUT_SDC)
-set LIB_FILE      $::env(PDKMOD_LIB_FILE)
+# Grab environment variables and paths
 set DESIGN_NAME   $::env(DESIGN_NAME)
+set V_FILE        $::env(SV2V_RUN_DIR)/results/${DESIGN_NAME}.v
+set SDC_FILE      $::env(SV2V_RUN_DIR)/results/${DESIGN_NAME}.sdc
+set LIB_FILE      $::env(PDKMOD_LIB_FILE)
 set CLOCK_PERIOD  [expr $::env(CLOCK_PERIOD) * 1000]
 
 # Run synthesis
 read_verilog -sv ${V_FILE}
-synth -top $::env(DESIGN_NAME) -flatten
+synth -top ${DESIGN_NAME} -flatten
 opt -purge
 dfflibmap -liberty ${LIB_FILE}
 opt

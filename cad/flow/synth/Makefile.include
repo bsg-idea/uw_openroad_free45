@@ -14,10 +14,10 @@ export SYNTH_RUN_DIR ?=$(BUILD_DIR)/synth
 # SYNTH
 #=======================================
 
-synth: sv2v
+synth: sv2v pdkmod
 	@## Perform synthesis using yosys.
-	$(eval export CLOCK_PORT  :=$(shell cat $(SV2V_OUT_SDC) | grep "^create_clock" | grep -wo "get_ports\s*\w*"  | cut -d " " -f 2))
-	$(eval export CLOCK_PERIOD:=$(shell cat $(SV2V_OUT_SDC) | grep "^create_clock" | grep -wo "period\s*[0-9.]*" | cut -d " " -f 2))
+	$(eval export CLOCK_PORT  :=$(shell cat $(SV2V_RUN_DIR)/results/$(DESIGN_NAME).sdc | grep "^create_clock" | grep -wo "get_ports\s*\w*"  | cut -d " " -f 2))
+	$(eval export CLOCK_PERIOD:=$(shell cat $(SV2V_RUN_DIR)/results/$(DESIGN_NAME).sdc | grep "^create_clock" | grep -wo "period\s*[0-9.]*" | cut -d " " -f 2))
 	mkdir -p $(SYNTH_RUN_DIR)/{reports,results,logs}
 	cd $(SYNTH_RUN_DIR) && \
 		(time yosys -c $(SYNTH_FLOW_DIR)/scripts/yosys.tcl) 2>&1 | tee -i logs/$@.log

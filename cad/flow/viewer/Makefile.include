@@ -9,7 +9,7 @@ export VIEWER_FLOW_DIR :=$(realpath $(shell dirname $(realpath $(lastword $(MAKE
 ##==============================================================================
 
 #=======================================
-# VIEW FP
+# VIEW PNR DEF
 #=======================================
 
 view.fp: view.%:
@@ -31,7 +31,7 @@ view.cts: view.%:
 	klayout -rm $(VIEWER_FLOW_DIR)/scripts/open_lef_def.rb
 
 view.pre_route: view.%:
-	@## View the def output of route step.
+	@## View the def output of pre_route step.
 	$(eval export REL_LEF_FILE=$(shell realpath --relative-to=$(PNR_RUN_DIR)/results $(PDKMOD_LEF_FILE)))
 	$(eval export DEF_FILE=$(shell realpath $(PNR_RUN_DIR)/results/$*.def))
 	klayout -rm $(VIEWER_FLOW_DIR)/scripts/open_lef_def.rb
@@ -48,30 +48,19 @@ view.finish: view.%:
 	$(eval export DEF_FILE=$(shell realpath $(PNR_RUN_DIR)/results/$*.def))
 	klayout -rm $(VIEWER_FLOW_DIR)/scripts/open_lef_def.rb
 
-#   #=======================================
-#   # VIEW CHIP FINISH
-#   #=======================================
-#   
-#   view.finish:
-#   	@## View the finalized gds.
-#   	klayout -nn $(VIEWER_FLOW_DIR)/scripts/tech.lyt $(FINISH_MERGE_OUT_GDS)
-#   
-#   #=======================================
-#   # VIEW DRC
-#   #=======================================
-#   
-#   view.drc:
-#   	@## View the results from the latest drc run.
-#   	klayout \
-#   		-nn $(VIEWER_FLOW_DIR)/scripts/tech.lyt \
-#   		$(FINISH_MERGE_OUT_GDS) \
-#   		-m $(DRC_RUN_DIR)/drc_results.ascii
-#   
-#   #=======================================
-#   # VIEW LVS
-#   #=======================================
-#   
-#   #view.lvs:
-#   #	@## View the results from the latest lvs run.
-#   #	#TODO
+#=======================================
+# VIEW FINAL GDS
+#=======================================
+
+view.final_gds:
+	@## View the finalized gds.
+	klayout -nn $(VIEWER_FLOW_DIR)/scripts/tech.lyt $(PNR_RUN_DIR)/results/finish.gds
+
+#=======================================
+# VIEW DRC
+#=======================================
+
+view.drc:
+	@## View the results from drc.
+	klayout -nn $(VIEWER_FLOW_DIR)/scripts/tech.lyt $(PNR_RUN_DIR)/results/finish.gds -m $(DRC_RUN_DIR)/drc_results.ascii
 

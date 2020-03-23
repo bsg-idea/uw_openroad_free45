@@ -11,9 +11,10 @@ export PDKMOD_FLOW_DIR :=$(realpath $(shell dirname $(realpath $(lastword $(MAKE
 export PDKMOD_RUN_DIR ?=$(BUILD_DIR)/pdkmod
 
 # Finalized PDK Files
-export PDKMOD_LIB_FILE :=$(PDKMOD_RUN_DIR)/nangate45.lib
-export PDKMOD_LEF_FILE :=$(PDKMOD_RUN_DIR)/nangate45.lef
-export PDKMOD_GDS_FILE :=$(PDKMOD_RUN_DIR)/nangate45.gds
+export PDKMOD_LIB_FILE   :=$(PDKMOD_RUN_DIR)/nangate45.lib
+export PDKMOD_LEF_FILE   :=$(PDKMOD_RUN_DIR)/nangate45.lef
+export PDKMOD_GDS_FILE   :=$(PDKMOD_RUN_DIR)/nangate45.gds
+export PDKMOD_HCELL_FILE :=$(PDKMOD_RUN_DIR)/nangate45.hcell
 
 #=======================================
 # PDKMOD
@@ -30,6 +31,8 @@ pdkmod: fakeram
 	$(OPENROAD_FLOW)/util/modifyLefSpacing.py -i $(PDKMOD_LEF_FILE) -o $(PDKMOD_LEF_FILE)
 	@# GDS FILE
 	klayout -zz -rd in=$(PDK_GDS_FILE) -rd out=$(PDKMOD_GDS_FILE) -r $(PDKMOD_FLOW_DIR)/scripts/convert_gds_dbu.rb
+	@# HCELL FILE
+	grep ^module $(PDK_V_FILE) | awk '{print $$2 " " $$2}' > $(PDKMOD_HCELL_FILE)
 	touch $(BUILD_VPATH)/$@
 
 
