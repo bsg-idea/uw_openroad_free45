@@ -26,13 +26,13 @@ endif
 
 ifeq ($(SV2V_SKIP),true)
 
-sv2v: build_setup
+sv2v: fakeram
 	@# Intentionally left undocumented
 	touch $(BUILD_VPATH)/$@
 
 else
 
-sv2v: build_setup
+sv2v: fakeram
 	@## Run bsg_sv2v. This will convert the design into a pickled verilog file
 	@## that is compatible with a larger set of EDA tools. It will also expand
 	@## our timing constraints and convert them to SDC format (if they were not
