@@ -21,7 +21,6 @@ synth: sv2v
 	mkdir -p $(SYNTH_RUN_DIR)/{reports,results,logs}
 	cd $(SYNTH_RUN_DIR) && \
 		(time yosys -c $(SYNTH_FLOW_DIR)/scripts/yosys.tcl) 2>&1 | tee -i logs/$@.log
-	! grep --color -i "^error" $(SYNTH_RUN_DIR)/logs/$@.log
 	touch $(BUILD_VPATH)/$@
 
 #=======================================

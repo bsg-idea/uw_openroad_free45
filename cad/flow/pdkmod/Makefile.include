@@ -24,13 +24,13 @@ pdkmod: fakeram
 	mkdir -p $(PDKMOD_RUN_DIR)
 	@# LIB FILE
 	$(OPENROAD_FLOW)/util/mergeLib.pl nangate45 $(PDK_LIB_FILE) $(wildcard $(FAKERAM_RUN_DIR)/*/*.lib) > $(PDKMOD_LIB_FILE)
-	$(OPENROAD_FLOW)/util/markDontUse.py -p "$(PDK_DONT_USE_CELLS)" -i $(PDKMOD_LIB_FILE) -o $(PDKMOD_LIB_FILE)
+	$(OPENROAD_FLOW)/util/markDontUse.py -p "$(DONT_USE_CELLS)" -i $(PDKMOD_LIB_FILE) -o $(PDKMOD_LIB_FILE)
 	@# LEF FILE
 	$(OPENROAD_FLOW)/util/mergeLef.py --inputLef $(PDK_TECH_LEF_FILE) $(PDK_LEF_FILE) $(wildcard $(FAKERAM_RUN_DIR)/*/*.lef) --outputLef $(PDKMOD_LEF_FILE)
 	$(OPENROAD_FLOW)/util/modifyLefSpacing.py -i $(PDKMOD_LEF_FILE) -o $(PDKMOD_LEF_FILE)
 	@# GDS FILE
 	klayout -zz -rd in=$(PDK_GDS_FILE) -rd out=$(PDKMOD_GDS_FILE) -r $(PDKMOD_FLOW_DIR)/scripts/convert_gds_dbu.rb
-	mkdir -p $(BUILD_VPATH) && touch $(BUILD_VPATH)/$@
+	touch $(BUILD_VPATH)/$@
 
 
 #=======================================

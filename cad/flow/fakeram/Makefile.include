@@ -19,7 +19,7 @@ ifeq ($(FAKERAM_CONFIG),)
 fakeram: build_setup
 	@# Intentionally left undocumented
 	mkdir -p $(FAKERAM_RUN_DIR)
-	mkdir -p $(BUILD_VPATH) && touch $(BUILD_VPATH)/$@
+	touch $(BUILD_VPATH)/$@
 
 else
 
@@ -30,7 +30,7 @@ fakeram: build_setup
 	mkdir -p $(FAKERAM_RUN_DIR)
 	cd $(TOOLS_DIR)/bsg_fakeram && make CONFIG=$(FAKERAM_CONFIG)
 	mv $(TOOLS_DIR)/bsg_fakeram/results/* $(FAKERAM_RUN_DIR)
-	mkdir -p $(BUILD_VPATH) && touch $(BUILD_VPATH)/$@
+	touch $(BUILD_VPATH)/$@
 
 endif
 

@@ -1,0 +1,107 @@
+export PNR_FLOW_DIR :=$(realpath $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST)))))
+
+##==============================================================================
+##  ___          _   _           _      _____                  _      
+## / __|_  _ _ _| |_| |_  ___ __(_)___ |_   _|_ _ _ _ __ _ ___| |_ ___
+## \__ \ || | ' \  _| ' \/ -_|_-< (_-<   | |/ _` | '_/ _` / -_)  _(_-<
+## |___/\_, |_||_\__|_||_\___/__/_/__/   |_|\__,_|_| \__, \___|\__/__/
+##      |__/                                         |___/            
+##==============================================================================
+
+export PNR_RUN_DIR ?=$(BUILD_DIR)/pnr
+
+# Specify margin, util and aspect ratio
+export FP_ASPECT_RATIO ?=1.0
+export FP_UTILIZATION  ?=0.10
+export FP_CORE_SPACE   ?=1
+
+# -OR-
+
+# Specify die and core area
+export FP_DIE_AREA  ?=
+export FP_CORE_AREA ?=$(FP_DIE_AREA)
+
+#=======================================
+# PNR
+#=======================================
+
+pnr: pnr.finish
+	@## Alias
+	touch $(BUILD_VPATH)/$@
+
+pnr.fp: pnr.%: synth
+	mkdir -p $(PNR_RUN_DIR)/{results,reports,logs}
+	cd $(PNR_RUN_DIR) && (time openroad -no_init -exit $(PNR_FLOW_DIR)/scripts/$*.tcl) 2>&1 | tee -i logs/$@.log
+	touch $(BUILD_VPATH)/$@
+
+pnr.place: pnr.%: pnr.fp
+	mkdir -p $(PNR_RUN_DIR)/{results,reports,logs}
+	cd $(PNR_RUN_DIR) && (time openroad -no_init -exit $(PNR_FLOW_DIR)/scripts/$*.tcl) 2>&1 | tee -i logs/$@.log
+	touch $(BUILD_VPATH)/$@
+
+pnr.cts: pnr.%: pnr.place
+	mkdir -p $(PNR_RUN_DIR)/{results,reports,logs}
+	cd $(PNR_RUN_DIR) && (time openroad -no_init -exit $(PNR_FLOW_DIR)/scripts/$*.tcl) 2>&1 | tee -i logs/$@.log
+	touch $(BUILD_VPATH)/$@
+
+pnr.pre_route: pnr.%: pnr.cts
+	mkdir -p $(PNR_RUN_DIR)/{results,reports,logs}
+	cd $(PNR_RUN_DIR) && (time openroad -no_init -exit $(PNR_FLOW_DIR)/scripts/$*.tcl) 2>&1 | tee -i logs/$@.log
+	touch $(BUILD_VPATH)/$@
+
+pnr.route: pnr.%: pnr.pre_route
+	mkdir -p $(PNR_RUN_DIR)/{results,reports,logs}
+	echo "lef:$(PDKMOD_LEF_FILE)"                               > $(PNR_RUN_DIR)/results/TritonRoute.param
+	echo "def:$(PNR_RUN_DIR)/results/cts.def"                  >> $(PNR_RUN_DIR)/results/TritonRoute.param
+	echo "guide:$(PNR_RUN_DIR)/results/route.guide"            >> $(PNR_RUN_DIR)/results/TritonRoute.param
+	echo "output:$(PNR_RUN_DIR)/results/route.def"             >> $(PNR_RUN_DIR)/results/TritonRoute.param
+	echo "outputTA:$(PNR_RUN_DIR)/results/route_TA.def"        >> $(PNR_RUN_DIR)/results/TritonRoute.param
+	echo "outputguide:$(PNR_RUN_DIR)/results/output_guide.mod" >> $(PNR_RUN_DIR)/results/TritonRoute.param
+	echo "outputDRC:$(PNR_RUN_DIR)/reports/route.drc.rpt"      >> $(PNR_RUN_DIR)/results/TritonRoute.param
+	echo "outputMaze:$(PNR_RUN_DIR)/results/maze.log"          >> $(PNR_RUN_DIR)/results/TritonRoute.param
+	echo "threads:4"                                           >> $(PNR_RUN_DIR)/results/TritonRoute.param
+	echo "cpxthreads:1"                                        >> $(PNR_RUN_DIR)/results/TritonRoute.param
+	echo "verbose:1"                                           >> $(PNR_RUN_DIR)/results/TritonRoute.param
+	echo "gap:0"                                               >> $(PNR_RUN_DIR)/results/TritonRoute.param
+	echo "timeout:2400"                                        >> $(PNR_RUN_DIR)/results/TritonRoute.param
+	cd $(PNR_RUN_DIR) && (time TritonRoute results/TritonRoute.param) 2>&1 | tee -i logs/$@.log
+	cp $(PNR_RUN_DIR)/results/pre_route.v $(PNR_RUN_DIR)/results/route.v
+	cp $(PNR_RUN_DIR)/results/pre_route.sdc $(PNR_RUN_DIR)/results/route.sdc
+	touch $(BUILD_VPATH)/$@
+
+pnr.finish: pnr.%: pnr.route
+	mkdir -p $(PNR_RUN_DIR)/{results,reports,logs}
+	cd $(PNR_RUN_DIR) && (time openroad -no_init -exit $(PNR_FLOW_DIR)/scripts/$*.tcl) 2>&1 | tee -i logs/$@.log
+	touch $(BUILD_VPATH)/$@
+
+#=======================================
+# CLEAN
+#=======================================
+
+clean.pnr: are_you_sure
+	rm -rf $(PNR_RUN_DIR)
+	rm -f $(BUILD_VPATH)/$(subst clean.,,$@).*
+
+clean.pnr.fp: are_you_sure
+	rm -f $(BUILD_VPATH)/$(subst clean.,,$@)
+
+clean.pnr.place: are_you_sure
+	@##
+	rm -f $(BUILD_VPATH)/$(subst clean.,,$@)
+
+clean.pnr.cts: are_you_sure
+	@##
+	rm -f $(BUILD_VPATH)/$(subst clean.,,$@)
+
+clean.pnr.pre_route: are_you_sure
+	@##
+	rm -f $(BUILD_VPATH)/$(subst clean.,,$@)
+
+clean.pnr.route: are_you_sure
+	@##
+	rm -f $(BUILD_VPATH)/$(subst clean.,,$@)
+
+clean.pnr.finish: are_you_sure
+	@##
+	rm -f $(BUILD_VPATH)/$(subst clean.,,$@)
+

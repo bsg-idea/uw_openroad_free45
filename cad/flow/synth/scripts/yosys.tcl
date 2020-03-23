@@ -25,6 +25,6 @@ tee -o reports/check.rpt check
 tee -o reports/stats.rpt stat -liberty ${LIB_FILE}
 
 # Results
-write_verilog -noattr -noexpr -nohex -nodec results/${DESIGN_NAME}.mapped.v
-file copy ${SDC_FILE} results/${DESIGN_NAME}.mapped.sdc
+write_verilog -noattr -noexpr -nohex -nodec results/synth.v
+file copy ${SDC_FILE} results/synth.sdc
 
