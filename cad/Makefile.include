@@ -2,12 +2,9 @@
 # TOOL POINTERS
 #===============================================================================
 
-export TOOLS_DIR       :=$(PREP_DIR)/tools
-export OPENROAD        :=$(TOOLS_DIR)/openroad/OpenROAD-2019-09-05_20-10
-export OPENROAD_FLOW   :=$(TOOLS_DIR)/alpha-release/flow
-export PATH            :=$(OPENROAD)/bin:$(OPENROAD)/bin/Linux-x86-64:$(OPENROAD)/pdn/scripts:$(PATH)
-export TCLLIBPATH      :=$(OPENROAD)/pdn/scripts
-export LD_LIBRARY_PATH :=$(TOOLS_DIR)/lib:$(LD_LIBRARY_PATH)
+export TOOLS_DIR     :=$(PREP_DIR)/tools
+export OPENROAD_FLOW :=$(TOOLS_DIR)/openroad/flow
+export PATH          :=$(TOOLS_DIR)/openroad/tools/build/OpenROAD/src:$(TOOLS_DIR)/openroad/tools/build/TritonRoute:$(TOOLS_DIR)/openroad/tools/build/yosys/bin:$(PATH)
 
 #===============================================================================
 # PDK POINTERS
@@ -24,31 +21,15 @@ export NANGATE_FE_DIR   :=$(PDK_ROOT_DIR)/NangateOpenCellLibrary_PDKv1_3_v2010_1
 export NANGATE_BE_DIR   :=$(PDK_ROOT_DIR)/NangateOpenCellLibrary_PDKv1_3_v2010_12/Back_End
 export NCSU_BASEKIT_DIR :=$(PDK_ROOT_DIR)/FreePDK45/ncsu_basekit
 
-# Lib Files
-export PDK_LIB_FILE :=$(NANGATE_FE_DIR)/Liberty/NLDM/NangateOpenCellLibrary_typical.lib
-export LIB_FILE     :=$(PREP_DIR)/lib/nangate45.lib
+# PDK Files
+export PDK_LIB_FILE			 :=$(NANGATE_FE_DIR)/Liberty/NLDM/NangateOpenCellLibrary_typical.lib
+#export PDK_LEF_FILE			 :=$(NANGATE_BE_DIR)/lef/NangateOpenCellLibrary.macro.lef
+export PDK_LEF_FILE			 :=$(OPENROAD_FLOW)/platforms/nangate45/lef/NangateOpenCellLibrary.macro.mod.lef
+export PDK_TECH_LEF_FILE :=$(NANGATE_BE_DIR)/lef/NangateOpenCellLibrary.tech.lef
+export PDK_GDS_FILE      :=$(NANGATE_BE_DIR)/gds/NangateOpenCellLibrary.gds
 
-# Lef Files
-#export PDK_LEF_FILE :=$(NANGATE_BE_DIR)/lef/NangateOpenCellLibrary.lef
-export PDK_LEF_FILE :=$(OPENROAD_FLOW)/platforms/nangate45/NangateOpenCellLibrary.mod.lef
-export LEF_FILE     :=$(PREP_DIR)/lef/nangate45.lef
-
-# Gds Files
-export PDK_GDS_FILE :=$(NANGATE_BE_DIR)/gds/NangateOpenCellLibrary.gds
-export GDS_FILE     :=$(NANGATE_BE_DIR)/gds/NangateOpenCellLibrary.fix_dbu.gds
-
-#===============================================================================
-# PLATFORM POINTERS
-#===============================================================================
-
-export PLACE_SITE       := FreePDK45_38x28_10R_NP_162NW_34O
-export TRACKS_INFO_FILE := $(OPENROAD_FLOW)/platforms/nangate45/tracks.info
-export CTS_TECH_DIR     := $(OPENROAD_FLOW)/platforms/nangate45/tritonCTS
-
-export CAP_PER_MICRON      := 0.235146e-12
-export RES_PER_MICRON      := 1.59
-export CAP_UNIT_PER_MICRON := 0.00020
-export RES_UNIT_PER_MICRON := 0.0020
+# PDK Parameters
+export PDK_DONT_USE_CELLS :=FILLCELL_X1 AOI211_X1 OAI211_X1
 
 #===============================================================================
 # INCLUDE CAD FLOW
@@ -56,6 +37,7 @@ export RES_UNIT_PER_MICRON := 0.0020
 
 include $(TOP_DIR)/cad/flow/prep/Makefile.include
 include $(TOP_DIR)/cad/flow/fakeram/Makefile.include
+include $(TOP_DIR)/cad/flow/pdkmod/Makefile.include
 include $(TOP_DIR)/cad/flow/sv2v/Makefile.include
 include $(TOP_DIR)/cad/flow/synth/Makefile.include
 include $(TOP_DIR)/cad/flow/fp/Makefile.include

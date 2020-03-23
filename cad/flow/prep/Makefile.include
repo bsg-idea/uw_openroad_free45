@@ -21,7 +21,6 @@ prep.pdk: $(NANGATE_PDK_TAR) $(FREE45_PDK_TAR)
 	mkdir -p $(PDK_ROOT_DIR)
 	cd $(PDK_ROOT_DIR) && tar xvf $(NANGATE_PDK_TAR)
 	cd $(PDK_ROOT_DIR) && tar xvf $(FREE45_PDK_TAR)
-	klayout -zz -rd in=$(PDK_GDS_FILE) -rd out=$(GDS_FILE) -r $(PREP_FLOW_DIR)/scripts/convert_gds_dbu.rb
 	mkdir -p $(PREP_VPATH) ; touch $(PREP_VPATH)/$@
 
 prep.fakeram:

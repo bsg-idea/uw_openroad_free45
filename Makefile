@@ -106,6 +106,12 @@ help.main: $(TOP_DIR)/Makefile.help
 help.prep: help.%: $(TOP_DIR)/cad/flow/%/Makefile.include.help
 	@## Print information about prep makefile targets.
 
+help.fakeram: help.%: $(TOP_DIR)/cad/flow/%/Makefile.include.help
+	@## Print information about fakeram makefile targets.
+
+help.pdkmod: help.%: $(TOP_DIR)/cad/flow/%/Makefile.include.help
+	@## Print information about pdkmod makefile targets.
+
 help.sv2v: help.%: $(TOP_DIR)/cad/flow/%/Makefile.include.help
 	@## Print information about sv2v makefile targets.
 
