@@ -1,0 +1,47 @@
+export PDKMOD_FLOW_DIR :=$(realpath $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST)))))
+
+##==============================================================================
+##  ___ ___  _  ____  __  ___  ___    _____                  _      
+## | _ \   \| |/ /  \/  |/ _ \|   \  |_   _|_ _ _ _ __ _ ___| |_ ___
+## |  _/ |) | ' <| |\/| | (_) | |) |   | |/ _` | '_/ _` / -_)  _(_-<
+## |_| |___/|_|\_\_|  |_|\___/|___/    |_|\__,_|_| \__, \___|\__/__/
+##                                                 |___/            
+##==============================================================================
+
+export PDKMOD_RUN_DIR ?=$(BUILD_DIR)/pdkmod
+
+# Finalized PDK Files
+export PDKMOD_LIB_FILE   :=$(PDKMOD_RUN_DIR)/nangate45.lib
+export PDKMOD_LEF_FILE   :=$(PDKMOD_RUN_DIR)/nangate45.lef
+export PDKMOD_GDS_FILE   :=$(PDKMOD_RUN_DIR)/nangate45.gds
+export PDKMOD_HCELL_FILE :=$(PDKMOD_RUN_DIR)/nangate45.hcell
+
+#=======================================
+# PDKMOD
+#=======================================
+
+pdkmod: fakeram
+	@## Generate modified pdk files.
+	mkdir -p $(PDKMOD_RUN_DIR)
+	@# LIB FILE
+	$(OPENROAD_FLOW)/util/mergeLib.pl nangate45 $(PDK_LIB_FILE) $(wildcard $(FAKERAM_RUN_DIR)/*/*.lib) > $(PDKMOD_LIB_FILE)
+	$(OPENROAD_FLOW)/util/markDontUse.py -p "$(DONT_USE_CELLS)" -i $(PDKMOD_LIB_FILE) -o $(PDKMOD_LIB_FILE)
+	@# LEF FILE
+	$(OPENROAD_FLOW)/util/mergeLef.py --inputLef $(PDK_TECH_LEF_FILE) $(PDK_LEF_FILE) $(wildcard $(FAKERAM_RUN_DIR)/*/*.lef) --outputLef $(PDKMOD_LEF_FILE)
+	$(OPENROAD_FLOW)/util/modifyLefSpacing.py -i $(PDKMOD_LEF_FILE) -o $(PDKMOD_LEF_FILE)
+	@# GDS FILE
+	klayout -zz -rd in=$(PDK_GDS_FILE) -rd out=$(PDKMOD_GDS_FILE) -r $(PDKMOD_FLOW_DIR)/scripts/convert_gds_dbu.rb
+	@# HCELL FILE
+	grep ^module $(PDK_V_FILE) | awk '{print $$2 " " $$2}' > $(PDKMOD_HCELL_FILE)
+	touch $(BUILD_VPATH)/$@
+
+
+#=======================================
+# CLEAN
+#=======================================
+
+clean.pdkmod: are_you_sure
+	@## Cleanup pdk modification generation.
+	rm -rf $(PDKMOD_RUN_DIR)
+	rm -f $(BUILD_VPATH)/$(subst clean.,,$@)
+

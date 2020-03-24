@@ -15,53 +15,37 @@ export DRC_LVS_FLOW_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST
 export DRC_RUN_DIR   ?=$(BUILD_DIR)/drc
 export DRC_NUM_CORES ?=4
 
-drc: finish.final
-	@## Perform design rule checks.
-	mkdir -p $(DRC_RUN_DIR)/logs
-	$(eval export LAYOUT_PRIMARY:=$(DESIGN_NAME))
-	$(eval export LAYOUT_PATH:=$(FINISH_FINAL_OUT_GDS))
-	cd $(DRC_RUN_DIR) && \
-		(time $(CALIBRE) \
-			-drc \
-			-turbo $(DRC_NUM_CORES) \
-			-hyper \
-			-hier \
-			$(DRC_LVS_FLOW_DIR)/scripts/run_drc.cal \
-		) 2>&1 | tee -i logs/$@.log
+export DRC_LAYOUT_PRIMARY:=$(DESIGN_NAME)
+export DRC_LAYOUT_PATH   :=$(PNR_RUN_DIR)/results/finish.gds
+
+drc: finish
+	@## Perform design rule checks (DRC).
+	mkdir -p $(DRC_RUN_DIR)
+	cd $(DRC_RUN_DIR) && (time $(CALIBRE) -drc -turbo $(DRC_NUM_CORES) -hyper -hier $(DRC_LVS_FLOW_DIR)/scripts/run_drc.cal) 2>&1 | tee -i $@.log
 	touch $(BUILD_VPATH)/$@
 
 #=======================================
 # LVS
 #=======================================
 
-# TODO: Fix this flow ( get something that should pass LVS first :] )
+export LVS_RUN_DIR   ?=$(BUILD_DIR)/lvs
+export LVS_NUM_CORES ?=4
 
-#export LVS_RUN_DIR   ?=$(BUILD_DIR)/lvs
-#export LVS_NUM_CORES ?=4
-#
-#lvs: finish.final
-#	@## Perform layout-vs-schematic.
-#	mkdir -p $(LVS_RUN_DIR)/logs
-#	$(eval export PDK_DIR:=$(PDK_ROOT_DIR)/FreePDK45)
-#	$(eval export LAYOUT_PRIMARY:=$(DESIGN_NAME))
-#	$(eval export SOURCE_PRIMARY:=$(DESIGN_NAME))
-#	$(eval export LAYOUT_PATH:=$(FINISH_FINAL_OUT_GDS))
-#	$(eval export SOURCE_PATH:=$(LVS_RUN_DIR)/source.cdl)
-#	cd $(LVS_RUN_DIR) && \
-#		(time v2lvs \
-#			-sl \
-#			-lsr $(PDK_ROOT_DIR)/NangateOpenCellLibrary_PDKv1_3_v2010_12/Back_End/spice/NangateOpenCellLibrary.spi \
-#			-s $(PDK_ROOT_DIR)/NangateOpenCellLibrary_PDKv1_3_v2010_12/Back_End/spice/NangateOpenCellLibrary.spi \
-#			-v $(FINISH_RUN_DIR)/results/finish.final.v \
-#			-o $(SOURCE_PATH) \
-#		) 2>&1 | tee -i logs/$@.v2lvs.log
-#	cd $(LVS_RUN_DIR) && \
-#		(time calibre \
-#			-lvs \
-#			-hier \
-#			$(DRC_LVS_FLOW_DIR)/scripts/run_lvs.cal \
-#		) 2>&1 | tee -i logs/$@.log
-#	touch $(BUILD_VPATH)/$@
+export LVS_LAYOUT_PRIMARY :=$(DESIGN_NAME)
+export LVS_LAYOUT_PATH    :=$(PNR_RUN_DIR)/results/finish.gds
+export LVS_SOURCE_PRIMARY :=$(DESIGN_NAME)
+export LVS_SOURCE_PATH    :=$(LVS_RUN_DIR)/source.cdl
+
+
+lvs: finish
+	@## Perform layout-vs-schematic (LVS).
+	$(eval export PDK_DIR:=$(PDK_ROOT_DIR)/FreePDK45)
+	$(eval export LVS_STD_CELLS :=$(shell grep ^module $(PDK_V_FILE) | awk '{print $$2}'))
+	echo $(LVS_STD_CELLS)
+	mkdir -p $(LVS_RUN_DIR)
+	cd $(LVS_RUN_DIR) && (time v2lvs -s0 VSS -s1 VDD -lsr $(PDK_SPI_FILE) -s $(PDK_SPI_FILE) -v $(PNR_RUN_DIR)/results/finish.v -o $(LVS_SOURCE_PATH)) 2>&1 | tee -i v2lvs.log
+	cd $(LVS_RUN_DIR) && (time calibre -lvs -turbo $(LVS_NUM_CORES) -hier -hcell $(PDKMOD_HCELL_FILE) $(DRC_LVS_FLOW_DIR)/scripts/run_lvs.cal) 2>&1 | tee -i $@.log
+	touch $(BUILD_VPATH)/$@
 
 #=======================================
 # CLEAN

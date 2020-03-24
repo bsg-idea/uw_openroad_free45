@@ -2,52 +2,40 @@
 # TOOL POINTERS
 #===============================================================================
 
-export TOOLS_DIR       :=$(TOP_DIR)/tools
-export OPENROAD        :=$(TOOLS_DIR)/openroad/OpenROAD-2019-09-05_20-10
-export OPENROAD_FLOW   :=$(TOOLS_DIR)/alpha-release/flow
-export PATH            :=$(OPENROAD)/bin:$(OPENROAD)/bin/Linux-x86-64:$(OPENROAD)/pdn/scripts:$(PATH)
-export TCLLIBPATH      :=$(OPENROAD)/pdn/scripts
-export LD_LIBRARY_PATH :=$(TOOLS_DIR)/lib:$(LD_LIBRARY_PATH)
+export TOOLS_DIR     :=$(PREP_DIR)/tools
+export PATH          :=$(TOOLS_DIR)/openroad/tools/build/OpenROAD/src:$(TOOLS_DIR)/openroad/tools/build/TritonRoute:$(TOOLS_DIR)/openroad/tools/build/yosys/bin:$(PATH)
 
 #===============================================================================
 # PDK POINTERS
 #===============================================================================
 
-# Unpacked pdk root dir
-export PDK_ROOT_DIR :=$(TOP_DIR)/pdk/unpacked
-
-# Directory pointers
 export NANGATE_PDK_TAR  :=$(TOP_DIR)/pdk/NangateOpenCellLibrary_PDKv1_3_v2010_12.tgz
 export FREE45_PDK_TAR   :=$(TOP_DIR)/pdk/ncsu-FreePDK45-1.4.tar.gz
+
+# Unpacked pdk root dir
+export PDK_ROOT_DIR :=$(PREP_DIR)/pdk
+
+# Directory pointers
 export NANGATE_FE_DIR   :=$(PDK_ROOT_DIR)/NangateOpenCellLibrary_PDKv1_3_v2010_12/Front_End
 export NANGATE_BE_DIR   :=$(PDK_ROOT_DIR)/NangateOpenCellLibrary_PDKv1_3_v2010_12/Back_End
 export NCSU_BASEKIT_DIR :=$(PDK_ROOT_DIR)/FreePDK45/ncsu_basekit
-
-# Lib Files
-export PDK_LIB_FILE :=$(NANGATE_FE_DIR)/Liberty/NLDM/NangateOpenCellLibrary_typical.lib
-export LIB_FILE     :=$(PREP_DIR)/lib/nangate45.lib
-
-# Lef Files
-#export PDK_LEF_FILE :=$(NANGATE_BE_DIR)/lef/NangateOpenCellLibrary.lef
-export PDK_LEF_FILE :=$(OPENROAD_FLOW)/platforms/nangate45/NangateOpenCellLibrary.mod.lef
-export LEF_FILE     :=$(PREP_DIR)/lef/nangate45.lef
-
-# Gds Files
-export PDK_GDS_FILE :=$(NANGATE_BE_DIR)/gds/NangateOpenCellLibrary.gds
-export GDS_FILE     :=$(PREP_DIR)/gds/nangate45.gds
-
-#===============================================================================
-# PLATFORM POINTERS
-#===============================================================================
-
-export PLACE_SITE       := FreePDK45_38x28_10R_NP_162NW_34O
-export TRACKS_INFO_FILE := $(OPENROAD_FLOW)/platforms/nangate45/tracks.info
+export OPENROAD_FLOW    :=$(TOOLS_DIR)/openroad/flow
 export CTS_TECH_DIR     := $(OPENROAD_FLOW)/platforms/nangate45/tritonCTS
 
-export CAP_PER_MICRON      := 0.235146e-12
-export RES_PER_MICRON      := 1.59
-export CAP_UNIT_PER_MICRON := 0.00020
-export RES_UNIT_PER_MICRON := 0.0020
+# PDK Files
+export PDK_V_FILE        :=$(NANGATE_FE_DIR)/Verilog/NangateOpenCellLibrary.v
+export PDK_LIB_FILE			 :=$(NANGATE_FE_DIR)/Liberty/NLDM/NangateOpenCellLibrary_typical.lib
+#export PDK_LEF_FILE			 :=$(NANGATE_BE_DIR)/lef/NangateOpenCellLibrary.macro.lef
+export PDK_LEF_FILE			 :=$(OPENROAD_FLOW)/platforms/nangate45/lef/NangateOpenCellLibrary.macro.mod.lef
+export PDK_TECH_LEF_FILE :=$(NANGATE_BE_DIR)/lef/NangateOpenCellLibrary.tech.lef
+export PDK_GDS_FILE      :=$(NANGATE_BE_DIR)/gds/NangateOpenCellLibrary.gds
+export PDK_SPI_FILE      :=$(NANGATE_BE_DIR)/spice/NangateOpenCellLibrary.spi
+
+# PDK Parameters
+export DONT_USE_CELLS   :=FILLCELL_X2 AOI211_X1 OAI211_X1
+export TRACKS_INFO_FILE := $(OPENROAD_FLOW)/platforms/nangate45/tracks.info
+export IP_GLOBAL_CFG    := $(OPENROAD_FLOW)/platforms/nangate45/IP_global.cfg
+export PDN_CFG          := $(PNR_FLOW_DIR)/scripts/pdk.cfg
 
 #===============================================================================
 # INCLUDE CAD FLOW
@@ -55,13 +43,10 @@ export RES_UNIT_PER_MICRON := 0.0020
 
 include $(TOP_DIR)/cad/flow/prep/Makefile.include
 include $(TOP_DIR)/cad/flow/fakeram/Makefile.include
+include $(TOP_DIR)/cad/flow/pdkmod/Makefile.include
 include $(TOP_DIR)/cad/flow/sv2v/Makefile.include
 include $(TOP_DIR)/cad/flow/synth/Makefile.include
-include $(TOP_DIR)/cad/flow/fp/Makefile.include
-include $(TOP_DIR)/cad/flow/place/Makefile.include
-include $(TOP_DIR)/cad/flow/cts/Makefile.include
-include $(TOP_DIR)/cad/flow/route/Makefile.include
-include $(TOP_DIR)/cad/flow/finish/Makefile.include
+include $(TOP_DIR)/cad/flow/pnr/Makefile.include
 include $(TOP_DIR)/cad/flow/drc_lvs/Makefile.include
 include $(TOP_DIR)/cad/flow/viewer/Makefile.include
 

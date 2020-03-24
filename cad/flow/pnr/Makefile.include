@@ -1,0 +1,127 @@
+export PNR_FLOW_DIR :=$(realpath $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST)))))
+
+##==============================================================================
+##  ___ _               __       ___          _         _____                  _      
+## | _ \ |__ _ __ ___  / _|___  | _ \___ _  _| |_ ___  |_   _|_ _ _ _ __ _ ___| |_ ___
+## |  _/ / _` / _/ -_) > _|_ _| |   / _ \ || |  _/ -_)   | |/ _` | '_/ _` / -_)  _(_-<
+## |_| |_\__,_\__\___| \_____|  |_|_\___/\_,_|\__\___|   |_|\__,_|_| \__, \___|\__/__/
+##                                                                   |___/            
+##==============================================================================
+
+export PNR_RUN_DIR ?=$(BUILD_DIR)/pnr
+
+# Specify margin, util and aspect ratio
+export FP_ASPECT_RATIO ?=1.0
+export FP_UTILIZATION  ?=0.10
+export FP_CORE_SPACE   ?=1
+
+# -OR-
+
+# Specify die and core area
+export FP_DIE_AREA  ?=
+export FP_CORE_AREA ?=$(FP_DIE_AREA)
+
+# Placement density
+export PLACEMENT_DENSITY ?= 0.50
+
+#=======================================
+# PNR STEPS
+#=======================================
+
+pnr: finish
+	@## Run the full pnr flow. Alias for finish.
+
+fp: synth
+	@## Perform chip floorplanning.
+	mkdir -p $(PNR_RUN_DIR)/{results,reports,logs}
+	cd $(PNR_RUN_DIR) && (time openroad -no_init -exit $(PNR_FLOW_DIR)/scripts/$@.tcl) 2>&1 | tee -i logs/$@.log
+	touch $(BUILD_VPATH)/$@
+
+place: fp
+	@## Perform detailed placement.
+	cd $(PNR_RUN_DIR) && (time openroad -no_init -exit $(PNR_FLOW_DIR)/scripts/$@.tcl) 2>&1 | tee -i logs/$@.log
+	touch $(BUILD_VPATH)/$@
+
+cts: place
+	@## Perform clock tree synthsis.
+	cd $(PNR_RUN_DIR) && (time openroad -no_init -exit $(PNR_FLOW_DIR)/scripts/$@.tcl) 2>&1 | tee -i logs/$@.log
+	touch $(BUILD_VPATH)/$@
+
+pre_route: cts
+	@## Perform pre-route preparations (ie. global route).
+	cd $(PNR_RUN_DIR) && (time openroad -no_init -exit $(PNR_FLOW_DIR)/scripts/$@.tcl) 2>&1 | tee -i logs/$@.log
+	touch $(BUILD_VPATH)/$@
+
+route: pre_route
+	@## Perform detailed routing.
+	echo "lef:$(PDKMOD_LEF_FILE)"                > $(PNR_RUN_DIR)/results/TritonRoute.param
+	echo "def:results/cts.def"                  >> $(PNR_RUN_DIR)/results/TritonRoute.param
+	echo "guide:results/pre_route.guide"        >> $(PNR_RUN_DIR)/results/TritonRoute.param
+	echo "output:results/route.def"             >> $(PNR_RUN_DIR)/results/TritonRoute.param
+	echo "outputTA:results/route_TA.def"        >> $(PNR_RUN_DIR)/results/TritonRoute.param
+	echo "outputguide:results/output_guide.mod" >> $(PNR_RUN_DIR)/results/TritonRoute.param
+	echo "outputDRC:reports/route_drc.rpt"      >> $(PNR_RUN_DIR)/results/TritonRoute.param
+	echo "outputMaze:results/maze.log"          >> $(PNR_RUN_DIR)/results/TritonRoute.param
+	echo "threads:4"                            >> $(PNR_RUN_DIR)/results/TritonRoute.param
+	echo "cpxthreads:1"                         >> $(PNR_RUN_DIR)/results/TritonRoute.param
+	echo "verbose:1"                            >> $(PNR_RUN_DIR)/results/TritonRoute.param
+	echo "gap:0"                                >> $(PNR_RUN_DIR)/results/TritonRoute.param
+	echo "timeout:2400"                         >> $(PNR_RUN_DIR)/results/TritonRoute.param
+	cd $(PNR_RUN_DIR) && (time TritonRoute results/TritonRoute.param) 2>&1 | tee -i logs/$@.log
+	cp $(PNR_RUN_DIR)/results/pre_route.v $(PNR_RUN_DIR)/results/$@.v
+	cp $(PNR_RUN_DIR)/results/pre_route.sdc $(PNR_RUN_DIR)/results/$@.sdc
+	touch $(BUILD_VPATH)/$@
+
+finish: route
+	@## Perform finishing steps (ie. final reports and gds merge).
+	mkdir -p $(PNR_RUN_DIR)/{results,reports,logs}
+	cd $(PNR_RUN_DIR) && (time openroad -no_init -exit $(PNR_FLOW_DIR)/scripts/$@.tcl) 2>&1 | tee -i logs/$@.log
+	(time klayout -zz \
+		-rd design_name=$(DESIGN_NAME) \
+		-rd in_def=$(PNR_RUN_DIR)/results/finish.def \
+		-rd in_lef=$(shell realpath --relative-to=$(PNR_RUN_DIR)/results $(PDKMOD_LEF_FILE)) \
+		-rd in_gds=$(PDKMOD_GDS_FILE) \
+		-rd out_gds=$(PNR_RUN_DIR)/results/finish.gds \
+		-rm $(PNR_FLOW_DIR)/scripts/def_to_gds.rb \
+	) 2>&1 | tee -i $(PNR_RUN_DIR)/logs/def_to_gds.log
+	touch $(BUILD_VPATH)/$@
+
+#=======================================
+# CLEAN
+#=======================================
+
+clean.pnr: are_you_sure
+	@## Cleanup all of the place-and-route steps.
+	rm -rf $(PNR_RUN_DIR)
+	rm -f $(BUILD_VPATH)/{fp,place,cts,pre_route,route,finish}
+
+clean.fp: are_you_sure
+	@## Cleanup floorplan steps.
+	rm -f $(PNR_RUN_DIR)/{results,reports,logs}/$(subst clean.,,$@).*
+	rm -f $(BUILD_VPATH)/$(subst clean.,,$@)
+
+clean.place: are_you_sure
+	@## Cleanup placement steps.
+	rm -f $(PNR_RUN_DIR)/{results,reports,logs}/$(subst clean.,,$@).*
+	rm -f $(BUILD_VPATH)/$(subst clean.,,$@)
+
+clean.cts: are_you_sure
+	@## Cleanup clock tree synthesis steps.
+	rm -f $(PNR_RUN_DIR)/{results,reports,logs}/$(subst clean.,,$@).*
+	rm -f $(BUILD_VPATH)/$(subst clean.,,$@)
+
+clean.pre_route: are_you_sure
+	@## Cleanup pre-route steps.
+	rm -f $(PNR_RUN_DIR)/{results,reports,logs}/$(subst clean.,,$@).*
+	rm -f $(BUILD_VPATH)/$(subst clean.,,$@)
+
+clean.route: are_you_sure
+	@## Cleanup routing steps.
+	rm -f $(PNR_RUN_DIR)/{results,reports,logs}/$(subst clean.,,$@).*
+	rm -f $(BUILD_VPATH)/$(subst clean.,,$@)
+
+clean.finish: are_you_sure
+	@## Cleanup finishing steps.
+	rm -f $(PNR_RUN_DIR)/{results,reports,logs}/$(subst clean.,,$@).*
+	rm -f $(BUILD_VPATH)/$(subst clean.,,$@)
+

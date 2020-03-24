@@ -14,112 +14,21 @@ export SYNTH_RUN_DIR ?=$(BUILD_DIR)/synth
 # SYNTH
 #=======================================
 
-synth: synth.final
-	@## Alias to run all synthesis steps. These steps are (in-order):
-	@##     1. synth.setup
-	@##     2. synth.yosys
-	@##     3. synth.buffer
-	@##     4. synth.final
-
-#=======================================
-# SETUP
-#=======================================
-
-synth.setup: sv2v
-	@## Perform setup tasks in preparation for a synthesis run.
-	mkdir -p $(SYNTH_RUN_DIR)/{logs,results,reports,etc,temp}
-	ln -nsf $(OPENROAD)/share/replace/PORT9.dat $(SYNTH_RUN_DIR)/etc/PORT9.dat
-	ln -nsf $(OPENROAD)/share/replace/POST9.dat $(SYNTH_RUN_DIR)/etc/POST9.dat
-	ln -nsf $(OPENROAD)/share/replace/POWV9.dat $(SYNTH_RUN_DIR)/etc/POWV9.dat
-	touch $(BUILD_VPATH)/$@
-
-#=======================================
-# YOSYS
-#=======================================
-
-export SYNTH_YOSYS_IN_V    :=$(SV2V_OUT_V)
-export SYNTH_YOSYS_IN_SDC  :=$(SV2V_OUT_SDC)
-export SYNTH_YOSYS_OUT_V   :=$(SYNTH_RUN_DIR)/results/synth.yosys.v
-export SYNTH_YOSYS_OUT_SDC :=$(SYNTH_RUN_DIR)/results/synth.yosys.sdc
-
-synth.yosys: synth.setup
-	@## Run yosys to perform RTL elaboration and technology mapping to create a
-	@## gate-level netlist.
-	$(eval export CLOCK_PORT  :=$(shell cat $(SYNTH_YOSYS_IN_SDC) | grep "^create_clock" | grep -wo "get_ports\s*\w*"  | cut -d " " -f 2))
-	$(eval export CLOCK_PERIOD:=$(shell cat $(SYNTH_YOSYS_IN_SDC) | grep "^create_clock" | grep -wo "period\s*[0-9.]*" | cut -d " " -f 2))
+synth: sv2v pdkmod
+	@## Perform synthesis using yosys.
+	$(eval export CLOCK_PORT  :=$(shell cat $(SV2V_RUN_DIR)/results/$(DESIGN_NAME).sdc | grep "^create_clock" | grep -wo "get_ports\s*\w*"  | cut -d " " -f 2))
+	$(eval export CLOCK_PERIOD:=$(shell cat $(SV2V_RUN_DIR)/results/$(DESIGN_NAME).sdc | grep "^create_clock" | grep -wo "period\s*[0-9.]*" | cut -d " " -f 2))
+	mkdir -p $(SYNTH_RUN_DIR)/{reports,results,logs}
 	cd $(SYNTH_RUN_DIR) && \
 		(time yosys -c $(SYNTH_FLOW_DIR)/scripts/yosys.tcl) 2>&1 | tee -i logs/$@.log
-	cp $(SYNTH_YOSYS_IN_SDC) $(SYNTH_YOSYS_OUT_SDC)
-	! grep --color -i "^error" $(SYNTH_RUN_DIR)/logs/$@.log
-	touch $(BUILD_VPATH)/$@
-
-#=======================================
-# BUFFER
-#=======================================
-
-export SYNTH_BUFFER_IN_V    :=$(SYNTH_YOSYS_OUT_V)
-export SYNTH_BUFFER_IN_SDC  :=$(SYNTH_YOSYS_OUT_SDC)
-export SYNTH_BUFFER_OUT_V   :=$(SYNTH_RUN_DIR)/results/synth.buffer.v
-export SYNTH_BUFFER_OUT_SDC :=$(SYNTH_RUN_DIR)/results/synth.buffer.sdc
-
-synth.buffer: synth.yosys
-	@## Run resizer to perform tie cell insertion as well as buffering for high
-	@## fanout signals.
-	$(eval export CLOCK_PORT  :=$(shell cat $(SYNTH_YOSYS_IN_SDC) | grep "^create_clock" | grep -wo "get_ports\s*\w*"  | cut -d " " -f 2))
-	$(eval export CLOCK_PERIOD:=$(shell cat $(SYNTH_YOSYS_IN_SDC) | grep "^create_clock" | grep -wo "period\s*[0-9.]*" | cut -d " " -f 2))
-	cd $(SYNTH_RUN_DIR)/temp && \
-		(time resizer $(SYNTH_FLOW_DIR)/scripts/buffer.tcl) 2>&1 | tee -i ../logs/$@.log
-	! grep --color -i "^error" $(SYNTH_RUN_DIR)/logs/$@.log
-	touch $(BUILD_VPATH)/$@
-
-#=======================================
-# FINAL
-#=======================================
-
-SYNTH_FINAL_OP :=cp
-#SYNTH_FINAL_OP :=ln -nsf
-
-export SYNTH_FINAL_IN_V    := $(SYNTH_BUFFER_OUT_V)
-export SYNTH_FINAL_IN_SDC  := $(SYNTH_BUFFER_OUT_SDC)
-export SYNTH_FINAL_OUT_V   := $(SYNTH_RUN_DIR)/results/synth.final.v
-export SYNTH_FINAL_OUT_SDC := $(SYNTH_RUN_DIR)/results/synth.final.sdc
-
-synth.final: synth.buffer
-	@## Finalize synthesis (put files in known locations for handoff).
-	$(SYNTH_FINAL_OP) $(SYNTH_FINAL_IN_V)   $(SYNTH_FINAL_OUT_V)
-	$(SYNTH_FINAL_OP) $(SYNTH_FINAL_IN_SDC) $(SYNTH_FINAL_OUT_SDC)
 	touch $(BUILD_VPATH)/$@
 
 #=======================================
 # CLEAN
 #=======================================
 
-clean.synth: clean.synth.setup
-	@## Alias to cleanup all synthesis steps.
-
-clean.synth.setup: are_you_sure clean.synth.yosys
-	@## Cleanup the synth.setup target.
+clean.synth: are_you_sure
+	@## Cleanup yosys synthesis.
 	rm -rf $(SYNTH_RUN_DIR)
-	rm -f $(BUILD_VPATH)/$(subst clean.,,$@)
-
-clean.synth.yosys: are_you_sure clean.synth.buffer
-	@## Cleanup the synth.yosys target.
-	rm -f $(SYNTH_YOSYS_OUT_V)
-	rm -f $(SYNTH_YOSYS_OUT_SDC)
-	rm -f $(SYNTH_RUN_DIR)/log/$(subst clean.,,$@).log
-	rm -f $(BUILD_VPATH)/$(subst clean.,,$@)
-
-clean.synth.buffer: are_you_sure clean.synth.final
-	@## Cleanup the synth.buffer target.
-	rm -f $(SYNTH_BUFFER_OUT_V)
-	rm -f $(SYNTH_BUFFER_OUT_SDC)
-	rm -f $(SYNTH_RUN_DIR)/log/$(subst clean.,,$@).log
-	rm -f $(BUILD_VPATH)/$(subst clean.,,$@)
-
-clean.synth.final: are_you_sure clean.fp
-	@## Cleanup the synth.final target.
-	rm -f $(SYNTH_FINAL_OUT_V)
-	rm -f $(SYNTH_FINAL_OUT_SDC)
-	rm -f $(SYNTH_RUN_DIR)/logs/$(subst clean.,,$@).log
 	rm -f $(BUILD_VPATH)/$(subst clean.,,$@)
 

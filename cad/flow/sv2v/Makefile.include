@@ -10,29 +10,30 @@ export SV2V_FLOW_DIR :=$(realpath $(shell dirname $(realpath $(lastword $(MAKEFI
 
 export SV2V_RUN_DIR ?=$(BUILD_DIR)/sv2v
 
+# Flag to skip SV2V. Doing so implies that you have a well formed picked
+# verilog and sdc file. You must set the variables PICKLED_V and PICKLED_SDC to
+# properly skip sv2v.
+export SV2V_SKIP ?=false
+
+# Pre-pickled verilog and sdc. Can be used rather than running sv2v.
+export PICKLED_V   ?=
+export PICKLED_SDC ?=
+
 #=======================================
 # SV2V
 #=======================================
 
-export SV2V_SKIP ?=false
-
-ifeq ($(SV2V_SKIP),true)
-  export SV2V_OUT_V   ?=$(PICKLED_V)
-  export SV2V_OUT_SDC ?=$(PICKLED_SDC)
-else
-  export SV2V_OUT_V   ?=$(SV2V_RUN_DIR)/results/$(DESIGN_NAME).v
-  export SV2V_OUT_SDC ?=$(SV2V_RUN_DIR)/results/$(DESIGN_NAME).sdc
-endif
-
 ifeq ($(SV2V_SKIP),true)
 
-sv2v: build_setup | prep
-	@# Intentionally left undocumented
+sv2v: fakeram
+	mkdir -p $(SV2V_RUN_DIR)/{logs,results,reports}
+	cp $(PICKLED_V)   $(SV2V_RUN_DIR)/results/$(DESIGN_NAME).v
+	cp $(PICKLED_SDC) $(SV2V_RUN_DIR)/results/$(DESIGN_NAME).sdc
 	touch $(BUILD_VPATH)/$@
 
 else
 
-sv2v: build_setup | prep
+sv2v: fakeram
 	@## Run bsg_sv2v. This will convert the design into a pickled verilog file
 	@## that is compatible with a larger set of EDA tools. It will also expand
 	@## our timing constraints and convert them to SDC format (if they were not
@@ -46,9 +47,9 @@ sv2v: build_setup | prep
 		DESIGN_NAME=$(DESIGN_NAME) \
 		DESIGN_ELAB_NAME=$(DESIGN_ELAB_NAME) \
 	) 2>&1 | tee -i $(SV2V_RUN_DIR)/logs/$@.log
-	cp $(SV2V_RUN_DIR)/results/run/$(DESIGN_NAME).sv2v.v $(SV2V_OUT_V)
-	-find $(PREP_DIR)/fakeram -name *.bb.v | xargs -I {} cat {} >> $(SV2V_OUT_V)
-	-cp $(SV2V_RUN_DIR)/results/run/$(DESIGN_NAME).elab.v.sdc $(SV2V_OUT_SDC)
+	cp $(SV2V_RUN_DIR)/results/run/$(DESIGN_NAME).sv2v.v $(SV2V_RUN_DIR)/results/$(DESIGN_NAME).v
+	-find $(FAKERAM_RUN_DIR) -name *.bb.v | xargs -I {} cat {} >> $(SV2V_RUN_DIR)/results/$(DESIGN_NAME).v
+	-cp $(SV2V_RUN_DIR)/results/run/$(DESIGN_NAME).elab.v.sdc $(SV2V_RUN_DIR)/results/$(DESIGN_NAME).sdc
 	! grep --color -i "^error" $(SV2V_RUN_DIR)/logs/$@.log
 	touch $(BUILD_VPATH)/$@
 

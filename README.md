@@ -163,14 +163,9 @@ of all the variables and what they represent:
 4. `SV2V_SKIP` - (OPTIONAL) Skips the sv2v flow. If this flow is skipped, then
    the user must define `PICKLED_V` and `PICKLED_SDC` variables.
 
-5. `FP_MACRO_SKIP` - (OPTIONAL) Skips macro placement during floorplanning.
+5. `PICKLED_V` - (REQUIRED if SV2V_SKIP) Combined Verilog RTL file.
 
-6. `FP_PDN_SKIP` - (OPTIONAL) Skips power delivery network synthesis.
-
-
-7. `PICKLED_V` - (REQUIRED if SV2V_SKIP) Combined Verilog RTL file.
-
-8. `PICKLED_SDC` - (REQUIRED if SV2V_SKIP) Combined SDC constraints file.
+6. `PICKLED_SDC` - (REQUIRED if SV2V_SKIP) Combined SDC constraints file.
 
 For floorplanning, there are two main ways to control the flow. You can specify
 the die area and core area or you can specify the aspect ratio, utilization and
@@ -178,21 +173,21 @@ core spacing. Specifying the die area takes precedence over all other floor
 plan specifications. If nothing is specified, then a 1:1 aspect ratio, 50%
 utilization and 0um core spacing is used.
 
-12. `FP_DIE_AREA` - (OPTIONAL) The die area in the format "llx lly urx ury". If
-    this value is specified, `FP_ASPECT_RATIO`, `FP_UTILIZATION` and
-    `FP_CORE_SPACE` will be ignored.
+7. `FP_DIE_AREA` - (OPTIONAL) The die area in the format "llx lly urx ury". If
+   this value is specified, `FP_ASPECT_RATIO`, `FP_UTILIZATION` and
+   `FP_CORE_SPACE` will be ignored.
 
-13. `FP_CORE_AREA` - (OPTIONAL) The core area in the format "llx lly urx ury".
-    Only takes effect if `FP_DIE_AREA` is specified.
+8. `FP_CORE_AREA` - (OPTIONAL) The core area in the format "llx lly urx ury".
+   Only takes effect if `FP_DIE_AREA` is specified.
 
-10. `FP_ASPECT_RATIO` - (OPTIONAL) Floating point number representing the
-    aspect ratio (width / height). Only takes effect if `FP_DIE_AREA` is left
-    unspecified.
+9. `FP_ASPECT_RATIO` - (OPTIONAL) Floating point number representing the
+   aspect ratio (width / height). Only takes effect if `FP_DIE_AREA` is left
+   unspecified.
 
-11. `FP_UTILIZATION` - (OPTIONAL) Target cell utilization (0-100). Only takes
+10. `FP_UTILIZATION` - (OPTIONAL) Target cell utilization (0-100). Only takes
     effect if `FP_DIE_AREA` is left unspecified.
 
-12. `FP_CORE_SPACE` - (OPTIONAL) Microns between core and die area. Only takes
+11. `FP_CORE_SPACE` - (OPTIONAL) Microns between core and die area. Only takes
     effect if `FP_DIE_AREA` is left unspecified.
 
 ## Makefile Infrastructure

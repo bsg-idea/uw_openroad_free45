@@ -1,7 +1,6 @@
 /current_build
 /build.*
-/sources
+/flow_prep
 /*.log
 /*.txt
 /are_you_sure
-/tools/
