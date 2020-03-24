@@ -48,7 +48,7 @@ sv2v: fakeram
 		DESIGN_ELAB_NAME=$(DESIGN_ELAB_NAME) \
 	) 2>&1 | tee -i $(SV2V_RUN_DIR)/logs/$@.log
 	cp $(SV2V_RUN_DIR)/results/run/$(DESIGN_NAME).sv2v.v $(SV2V_RUN_DIR)/results/$(DESIGN_NAME).v
-	-find $(PREP_DIR)/fakeram -name *.bb.v | xargs -I {} cat {} >> $(SV2V_RUN_DIR)/results/$(DESIGN_NAME).v
+	-find $(FAKERAM_RUN_DIR) -name *.bb.v | xargs -I {} cat {} >> $(SV2V_RUN_DIR)/results/$(DESIGN_NAME).v
 	-cp $(SV2V_RUN_DIR)/results/run/$(DESIGN_NAME).elab.v.sdc $(SV2V_RUN_DIR)/results/$(DESIGN_NAME).sdc
 	! grep --color -i "^error" $(SV2V_RUN_DIR)/logs/$@.log
 	touch $(BUILD_VPATH)/$@
