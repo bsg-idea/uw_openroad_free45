@@ -41,12 +41,10 @@ prep.sv2v:
 
 prep.openroad:
 	@## Download and prep OpenROAD.
-	mkdir -p $(TOOLS_DIR)
-	# TODO replace with a download link instructions... figure out how to package
-	# and distribute the build that is working.
 	mkdir -p $(TOOLS_DIR)/openroad
 	cd $(TOOLS_DIR)/openroad && \
-		tar -xvf ~/IDEA/openroad_builds/build_20_3_18_d21019e/openroad.tar.gz
+		wget https://github.com/bsg-idea/uw_openroad_free45/releases/download/v0.1/openroad.d21019e.tar.gz && \
+		tar -xvf openroad.d21019e.tar.gz
 	mkdir -p $(PREP_VPATH) ; touch $(PREP_VPATH)/$@
 
 #=======================================
