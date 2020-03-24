@@ -18,13 +18,6 @@ PICKLED_SDC  := $(DESIGN_DIR)/constraints.sdc
 
 # Floorplan parameters
 FP_ASPECT_RATIO := 1.0
-FP_UTILIZATION  := 50.0
+FP_UTILIZATION  := 0.10
 FP_CORE_SPACE   := 0.0
-
-# Skip macro placement?
-# For this design, there are no macros, so we should skip macro placement.
-FP_MACRO_SKIP := true
-
-# PDN currently not supported, come back soon!
-FP_PDN_SKIP := true
 
