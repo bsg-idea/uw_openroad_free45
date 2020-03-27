@@ -13,11 +13,11 @@ FAKERAM_CONFIG := $(DESIGN_DIR)/cfg/fakeram45.cfg
 
 # Floorplan parameters
 FP_ASPECT_RATIO := 1.0
-FP_UTILIZATION  := 0.20
+FP_UTILIZATION  := 0.10
 FP_CORE_SPACE   := 0.0
 
 # Placement Density Control
-PLACEMENT_DENSITY := 0.40
+PLACEMENT_DENSITY := 0.20
 
 #===============================================================================
 # Design Specific Makefile Splicing
