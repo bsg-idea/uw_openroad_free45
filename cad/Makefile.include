@@ -2,8 +2,9 @@
 # TOOL POINTERS
 #===============================================================================
 
-export TOOLS_DIR     :=$(PREP_DIR)/tools
-export PATH          :=$(TOOLS_DIR)/openroad/tools/build/OpenROAD/src:$(TOOLS_DIR)/openroad/tools/build/TritonRoute:$(TOOLS_DIR)/openroad/tools/build/yosys/bin:$(PATH)
+export TOOLS_DIR       :=$(PREP_DIR)/tools
+export PATH            :=$(TOOLS_DIR)/openroad/tools/build/OpenROAD/src:$(TOOLS_DIR)/openroad/tools/build/TritonRoute:$(TOOLS_DIR)/openroad/tools/build/yosys/bin:$(PATH)
+export LD_LIBRARY_PATH :=$(TOOLS_DIR)/openroad/lib:$(LD_LIBRARY_PATH)
 
 #===============================================================================
 # PDK POINTERS
