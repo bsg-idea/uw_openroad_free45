@@ -28,7 +28,7 @@ prep.fakeram:
 	mkdir -p $(TOOLS_DIR)
 	cd $(TOOLS_DIR) &&\
 		git clone https://github.com/bespoke-silicon-group/bsg_fakeram && \
-		cd bsg_fakeram && git checkout 6f39e48 && $(MAKE) tools
+		cd bsg_fakeram && git checkout d6b6dc6 && $(MAKE) tools
 	mkdir -p $(PREP_VPATH) ; touch $(PREP_VPATH)/$@
 
 prep.sv2v:
@@ -36,7 +36,7 @@ prep.sv2v:
 	mkdir -p $(TOOLS_DIR)
 	cd $(TOOLS_DIR) && \
 		git clone https://github.com/bespoke-silicon-group/bsg_sv2v && \
-		cd bsg_sv2v && git checkout 7d2f215 && $(MAKE) tools
+		cd bsg_sv2v && git checkout bb34428 && $(MAKE) tools
 	mkdir -p $(PREP_VPATH) ; touch $(PREP_VPATH)/$@
 
 prep.openroad:
