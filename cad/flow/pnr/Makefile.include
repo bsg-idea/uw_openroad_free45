@@ -10,6 +10,9 @@ export PNR_FLOW_DIR :=$(realpath $(shell dirname $(realpath $(lastword $(MAKEFIL
 
 export PNR_RUN_DIR ?=$(BUILD_DIR)/pnr
 
+# Placement density
+export PLACEMENT_DENSITY ?= 0.50
+
 # Specify margin, util and aspect ratio
 export FP_ASPECT_RATIO ?=1.0
 export FP_UTILIZATION  ?=0.10
@@ -20,9 +23,6 @@ export FP_CORE_SPACE   ?=1
 # Specify die and core area
 export FP_DIE_AREA  ?=
 export FP_CORE_AREA ?=$(FP_DIE_AREA)
-
-# Placement density
-export PLACEMENT_DENSITY ?= 0.50
 
 #=======================================
 # PNR STEPS
@@ -97,31 +97,31 @@ clean.pnr: are_you_sure
 
 clean.fp: are_you_sure
 	@## Cleanup floorplan steps.
-	rm -f $(PNR_RUN_DIR)/{results,reports,logs}/$(subst clean.,,$@).*
+	rm -f $(PNR_RUN_DIR)/{results,reports,logs}/$(subst clean.,,$@)*.*
 	rm -f $(BUILD_VPATH)/$(subst clean.,,$@)
 
 clean.place: are_you_sure
 	@## Cleanup placement steps.
-	rm -f $(PNR_RUN_DIR)/{results,reports,logs}/$(subst clean.,,$@).*
+	rm -f $(PNR_RUN_DIR)/{results,reports,logs}/$(subst clean.,,$@)*.*
 	rm -f $(BUILD_VPATH)/$(subst clean.,,$@)
 
 clean.cts: are_you_sure
 	@## Cleanup clock tree synthesis steps.
-	rm -f $(PNR_RUN_DIR)/{results,reports,logs}/$(subst clean.,,$@).*
+	rm -f $(PNR_RUN_DIR)/{results,reports,logs}/$(subst clean.,,$@)*.*
 	rm -f $(BUILD_VPATH)/$(subst clean.,,$@)
 
 clean.pre_route: are_you_sure
 	@## Cleanup pre-route steps.
-	rm -f $(PNR_RUN_DIR)/{results,reports,logs}/$(subst clean.,,$@).*
+	rm -f $(PNR_RUN_DIR)/{results,reports,logs}/$(subst clean.,,$@)*.*
 	rm -f $(BUILD_VPATH)/$(subst clean.,,$@)
 
 clean.route: are_you_sure
 	@## Cleanup routing steps.
-	rm -f $(PNR_RUN_DIR)/{results,reports,logs}/$(subst clean.,,$@).*
+	rm -f $(PNR_RUN_DIR)/{results,reports,logs}/$(subst clean.,,$@)*.*
 	rm -f $(BUILD_VPATH)/$(subst clean.,,$@)
 
 clean.finish: are_you_sure
 	@## Cleanup finishing steps.
-	rm -f $(PNR_RUN_DIR)/{results,reports,logs}/$(subst clean.,,$@).*
+	rm -f $(PNR_RUN_DIR)/{results,reports,logs}/$(subst clean.,,$@)*.*
 	rm -f $(BUILD_VPATH)/$(subst clean.,,$@)
 

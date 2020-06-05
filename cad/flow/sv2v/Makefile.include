@@ -27,7 +27,8 @@ ifeq ($(SV2V_SKIP),true)
 
 sv2v: fakeram
 	mkdir -p $(SV2V_RUN_DIR)/{logs,results,reports}
-	cp $(PICKLED_V)   $(SV2V_RUN_DIR)/results/$(DESIGN_NAME).v
+	cp $(PICKLED_V) $(SV2V_RUN_DIR)/results/$(DESIGN_NAME).v
+	-find $(FAKERAM_RUN_DIR) -name *.bb.v | xargs -I {} cat {} >> $(SV2V_RUN_DIR)/results/$(DESIGN_NAME).v
 	cp $(PICKLED_SDC) $(SV2V_RUN_DIR)/results/$(DESIGN_NAME).sdc
 	touch $(BUILD_VPATH)/$@
 

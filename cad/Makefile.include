@@ -1,4 +1,17 @@
 #===============================================================================
+# INCLUDE CAD FLOW
+#===============================================================================
+
+include $(TOP_DIR)/cad/flow/prep/Makefile.include
+include $(TOP_DIR)/cad/flow/fakeram/Makefile.include
+include $(TOP_DIR)/cad/flow/pdkmod/Makefile.include
+include $(TOP_DIR)/cad/flow/sv2v/Makefile.include
+include $(TOP_DIR)/cad/flow/synth/Makefile.include
+include $(TOP_DIR)/cad/flow/pnr/Makefile.include
+include $(TOP_DIR)/cad/flow/drc_lvs/Makefile.include
+include $(TOP_DIR)/cad/flow/viewer/Makefile.include
+
+#===============================================================================
 # TOOL POINTERS
 #===============================================================================
 
@@ -36,18 +49,7 @@ export PDK_SPI_FILE      :=$(NANGATE_BE_DIR)/spice/NangateOpenCellLibrary.spi
 export DONT_USE_CELLS   :=FILLCELL_X2 AOI211_X1 OAI211_X1
 export TRACKS_INFO_FILE := $(OPENROAD_FLOW)/platforms/nangate45/tracks.info
 export IP_GLOBAL_CFG    := $(OPENROAD_FLOW)/platforms/nangate45/IP_global.cfg
-export PDN_CFG          := $(PNR_FLOW_DIR)/scripts/pdk.cfg
-
-#===============================================================================
-# INCLUDE CAD FLOW
-#===============================================================================
-
-include $(TOP_DIR)/cad/flow/prep/Makefile.include
-include $(TOP_DIR)/cad/flow/fakeram/Makefile.include
-include $(TOP_DIR)/cad/flow/pdkmod/Makefile.include
-include $(TOP_DIR)/cad/flow/sv2v/Makefile.include
-include $(TOP_DIR)/cad/flow/synth/Makefile.include
-include $(TOP_DIR)/cad/flow/pnr/Makefile.include
-include $(TOP_DIR)/cad/flow/drc_lvs/Makefile.include
-include $(TOP_DIR)/cad/flow/viewer/Makefile.include
+export PDN_CFG          := $(PNR_FLOW_DIR)/scripts/pdn.cfg
+export PDK_CPP          := 0.19
+export PDK_TRACK_HEIGHT := 0.14
 
