@@ -5,12 +5,20 @@ open_design $::env(SYNTH_RUN_DIR)/results/synth.v \
             $::env(SYNTH_RUN_DIR)/results/synth.sdc \
             $::env(DESIGN_NAME)
 
-if { [info exists ::env(FP_DIE_AREA)] && $::env(FP_DIE_AREA) != "" } {
+if { [info exists ::env(FP_IDF_FILE)] && $::env(FP_IDF_FILE) != "" } {
+  puts "[INFO] Using IDF file \"$::env(FP_IDF_FILE)\" for floorplaning."
+  puts "[INFO] Reading IDF file."
+  idf_read $::env(FP_IDF_FILE)
+  puts "[INFO] Performing IDF floorplan initialization."
+  idf_init_floorplan
+
+} elseif { [info exists ::env(FP_DIE_AREA)] && $::env(FP_DIE_AREA) != "" } {
   puts "[INFO] Initializing floorplan (die_area={$::env(FP_DIE_AREA)}, core_area={$::env(FP_CORE_AREA)})."
   initialize_floorplan -die_area $::env(FP_DIE_AREA) \
                        -core_area $::env(FP_CORE_AREA) \
                        -tracks $::env(TRACKS_INFO_FILE) \
                        -site FreePDK45_38x28_10R_NP_162NW_34O
+
 } else {
   puts "[INFO] Initializing floorplan (util=$::env(FP_UTILIZATION), aspect_ratio=$::env(FP_ASPECT_RATIO), core_space=$::env(FP_CORE_SPACE))."
   initialize_floorplan -utilization [expr $::env(FP_UTILIZATION)*100.0] \
@@ -28,8 +36,20 @@ set_wire_rc -layer metal3
 global_placement -timing_driven -density $::env(PLACEMENT_DENSITY)
 
 if { [has_macros] } {
-  puts "[INFO] Performing macro placement."
-  macro_placement -global_config $::env(IP_GLOBAL_CFG)
+  if { [info exists ::env(FP_IDF_FILE)] && $::env(FP_IDF_FILE) != "" } {
+    puts "[INFO] Performing IDF port placement."
+    idf_place_ports
+    puts "[INFO] Performing IDF macro placement."
+    idf_place_macros
+  } else {
+    puts "[INFO] Performing macro placement."
+    macro_placement -global_config $::env(IP_GLOBAL_CFG)
+  }
+
+  puts "[INFO] Performing global placement after macro placement (density=$::env(PLACEMENT_DENSITY))."
+  set_wire_rc -layer metal3
+  global_placement -timing_driven -density $::env(PLACEMENT_DENSITY)
+
 } else {
   puts "[INFO] No macros found, skipping macro placement."
 }
